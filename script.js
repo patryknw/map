@@ -24,6 +24,12 @@ var weekday_number = 2;
 var day_name = days[1];
 var month_name = months[0];
 
+function getRandomInt(min, max){
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 class Tile{
     constructor(x, y, type, height, forestDensity, feature){
         this.x = x;
@@ -158,62 +164,64 @@ class Tile{
         ctx.fill();
     }
     generateForest(){
-        switch(this.type){
-            case "plains":
-                if(Math.floor(Math.random() * 50) == 0){
-                    switch(Math.floor(Math.random() * 2)){
-                        case 0:
-                            this.drawTree("deciduous");
-                            break;
-                        case 1:
-                            this.drawTree("conifer");
-                            break;
+        if(this.feature == null){
+            switch(this.type){
+                case "plains":
+                    if(Math.floor(Math.random() * 50) == 0){
+                        switch(Math.floor(Math.random() * 2)){
+                            case 0:
+                                this.drawTree("deciduous");
+                                break;
+                            case 1:
+                                this.drawTree("conifer");
+                                break;
+                        }
                     }
-                }
-                break;
-            case "forest_edge":
-                if(Math.floor(Math.random() * 3) == 0){
-                    switch(Math.floor(Math.random() * 2)){
-                        case 0:
-                            this.drawTree("deciduous");
-                            break;
-                        case 1:
-                            this.drawTree("conifer");
-                            break;
+                    break;
+                case "forest_edge":
+                    if(Math.floor(Math.random() * 3) == 0){
+                        switch(Math.floor(Math.random() * 2)){
+                            case 0:
+                                this.drawTree("deciduous");
+                                break;
+                            case 1:
+                                this.drawTree("conifer");
+                                break;
+                        }
                     }
-                }
-                break;
-            case "forest":
-                if(Math.floor(Math.random() * 5) != 0){
-                    switch(Math.floor(Math.random() * 2)){
-                        case 0:
-                            this.drawTree("deciduous");
-                            break;
-                        case 1:
-                            this.drawTree("conifer");
-                            break;
+                    break;
+                case "forest":
+                    if(Math.floor(Math.random() * 5) != 0){
+                        switch(Math.floor(Math.random() * 2)){
+                            case 0:
+                                this.drawTree("deciduous");
+                                break;
+                            case 1:
+                                this.drawTree("conifer");
+                                break;
+                        }
                     }
-                }
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
+            }
         }
     }
-    generateVillage(){
+    generateStandaloneHouse(){
         if(this.feature != null){ return };
         switch(this.type){
             case "plains":
-                if(Math.floor(Math.random() * 200) == 0){
+                if(Math.floor(Math.random() * 5000) == 0){
                     this.drawHouse();
                 }
                 break;
             case "forest_edge":
-                if(Math.floor(Math.random() * 250) == 0){
+                if(Math.floor(Math.random() * 2500) == 0){
                     this.drawHouse();
                 }
                 break;
             case "forest":
-                if(Math.floor(Math.random() * 100) == 0){
+                if(Math.floor(Math.random() * 1000) == 0){
                     this.drawHouse();
                 }
                 break;
@@ -267,11 +275,34 @@ function drawFeatures(){
     for(var j = 0; j < mapTiles.length; j++){
         for(var i = 0; i < mapTiles[j].length; i++){
             mapTiles[j][i].generateForest();
-            mapTiles[j][i].generateVillage();
+            mapTiles[j][i].generateStandaloneHouse();
         }
     }
 }
 
+function drawVillage(){
+    const VILLAGE_RADIUS = getRandomInt(3, 5);
+
+    var village_x = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), WIDTH - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
+    var village_y = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), HEIGHT - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
+
+    for(var j = 0; j < mapTiles.length; j++){
+        for(var i = 0; i < mapTiles[j].length; i++){
+            /*if(j == village_y && i == village_x){  // Center of village
+                mapTiles[j][i].drawPerlinDebug();
+            }*/
+            if(j > village_y - VILLAGE_RADIUS && j < village_y + VILLAGE_RADIUS && i > village_x - VILLAGE_RADIUS && i < village_x + VILLAGE_RADIUS){
+                if(Math.floor(Math.random() * 5) == 0){
+                    if(mapTiles[j][i].type != "water" && mapTiles[j][i].feature == null){
+                        mapTiles[j][i].drawHouse();
+                    }
+                }
+            }
+        }
+    }
+}
+
+drawVillage();
 drawFeatures();
 
 function nextDay(){
