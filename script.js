@@ -3,6 +3,7 @@
  * village prosperity
  * different house variants based on "richness" of the village (eg. white houses from Zalipie)
  * zoom mechanism
+ * forest generation based fully on perlin
  */
 
 var canvas = document.getElementById("canvas");
