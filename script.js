@@ -18,14 +18,13 @@ var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", 
 var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var seasons = ["Spring", "Summer", "Autumn", "Winter"];
 
-var day = 1;
-var month = 1;
+var day = 7;
+var month = 4;
 var year = 1619;
-var weekday_number = 2;
-var season = seasons[3];
-
-var day_name = days[1];
-var month_name = months[0];
+var weekday_number = 7;
+var season = seasons[0];
+var day_name = days[6];
+var month_name = months[3];
 
 // Creating empty map array
 var mapTiles = Array.from({length: HEIGHT / TILE_SIZE});
@@ -110,13 +109,13 @@ class Tile{
             case seasons[1]:  // Summer
                 switch(this.type){
                     case "plains":
-                        ctx.fillStyle = `rgb(81, ${offsetColor(140, 3)}, 49)`;
+                        ctx.fillStyle = `rgb(67, ${offsetColor(140, 3)}, 49)`;
                         break;
                     case "forest_edge":
-                        ctx.fillStyle = `rgb(46, ${offsetColor(131, 4)}, 43)`;
+                        ctx.fillStyle = `rgb(61, ${offsetColor(131, 4)}, 43)`;
                         break;
                     case "forest":
-                        ctx.fillStyle = `rgb(38, ${offsetColor(117, 5)}, 36)`;
+                        ctx.fillStyle = `rgb(53, ${offsetColor(117, 5)}, 36)`;
                         break;
                     case "water":
                         ctx.fillStyle = "#4495cf";
@@ -126,13 +125,13 @@ class Tile{
             case seasons[2]:  // Autumn
                 switch(this.type){
                     case "plains":
-                        ctx.fillStyle = `rgb(97, ${offsetColor(140, 3)}, 49)`;
+                        ctx.fillStyle = `rgb(81, ${offsetColor(140, 3)}, 49)`;
                         break;
                     case "forest_edge":
-                        ctx.fillStyle = `rgb(46, ${offsetColor(131, 4)}, 43)`;
+                        ctx.fillStyle = `rgb(75, ${offsetColor(131, 4)}, 43)`;
                         break;
                     case "forest":
-                        ctx.fillStyle = `rgb(38, ${offsetColor(117, 5)}, 36)`;
+                        ctx.fillStyle = `rgb(67, ${offsetColor(117, 5)}, 36)`;
                         break;
                     case "water":
                         ctx.fillStyle = "#4495cf";
@@ -142,13 +141,16 @@ class Tile{
             case seasons[3]:  // Winter
                 switch(this.type){
                     case "plains":
-                        ctx.fillStyle = `rgb(${offsetColor(255, 3)}, ${offsetColor(250, 3)}, ${offsetColor(250, 3)})`;
+                        var snowColor = offsetColor(242, 2);
+                        ctx.fillStyle = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
                         break;
                     case "forest_edge":
-                        ctx.fillStyle = `rgb(46, ${offsetColor(131, 4)}, 43)`;
+                        var snowColor = offsetColor(238, 2);
+                        ctx.fillStyle = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
                         break;
                     case "forest":
-                        ctx.fillStyle = `rgb(38, ${offsetColor(117, 5)}, 36)`;
+                        var snowColor = offsetColor(234, 2);
+                        ctx.fillStyle = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
                         break;
                     case "water":
                         ctx.fillStyle = `rgb(${offsetColor(219, 2)}, ${offsetColor(241, 2)}, ${offsetColor(253, 2)})`;
@@ -396,7 +398,7 @@ function generateVillage(){
     }
 }
 
-function drawSingleHouse(){
+function drawHouses(){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
             if(mapTiles[j][i].feature == "house"){
@@ -469,7 +471,7 @@ function init(){
     generateForest();
     generateStandaloneHouse();
     generateVillage();
-    drawSingleHouse();
+    drawHouses();
     drawForest();
     displayDate();
 }
@@ -479,8 +481,8 @@ function update(){
     nextDay();
     displayDate();
     drawFinalTile();
+    drawHouses();
     drawForest();
-    drawSingleHouse();
 }
 
 function fastForwardTime(event){
