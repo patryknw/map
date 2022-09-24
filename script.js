@@ -2,8 +2,9 @@
  * drawing of forest happens on another layer
  * village prosperity
  * different house variants based on "richness" of the village (eg. white houses from Zalipie)
- * zoom mechanism
- * forest generation based fully on perlin
+ * zoom mechanic
+ * land fertility mechanic
+ * forest generation fully based on perlin
  */
 
 var canvas = document.getElementById("canvas");
@@ -28,6 +29,10 @@ function getRandomInt(min, max){
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function offsetColor(color, offset){
+    return getRandomInt(color - offset, color + offset);
 }
 
 class Tile{
@@ -153,15 +158,54 @@ class Tile{
                 break;
             }
         }
-    drawHouse(){
+    drawHouse(type){
         this.feature = "house";
-        ctx.fillStyle = "#5c4a30";
-        ctx.fillRect(this.x * TILE_SIZE, (this.y * TILE_SIZE) + (TILE_SIZE / 2), TILE_SIZE, TILE_SIZE / 2);
-        ctx.beginPath();
-        ctx.moveTo(this.x * TILE_SIZE, (this.y * TILE_SIZE) + (TILE_SIZE / 2));
-        ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 2), this.y * TILE_SIZE);
-        ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE, (this.y * TILE_SIZE) + (TILE_SIZE / 2));
-        ctx.fill();
+        switch(type){
+            case "thatch":
+                break;
+            case "wooden":
+                // House Body
+                let mainColor = ctx.fillStyle = `rgb(${offsetColor(92, 4)}, ${offsetColor(74, 4)}, ${offsetColor(48, 4)})`;
+                ctx.fillRect(this.x * TILE_SIZE, (this.y * TILE_SIZE) + (TILE_SIZE / 2), TILE_SIZE, TILE_SIZE / 2);
+
+                // House Roof
+                ctx.fillStyle = `rgb(${offsetColor(77, 4)}, ${offsetColor(61, 4)}, ${offsetColor(39, 4)})`;
+                ctx.beginPath();
+                ctx.moveTo((this.x * TILE_SIZE) - (TILE_SIZE / 4), (this.y * TILE_SIZE) + (TILE_SIZE / 2));
+                ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 2), this.y * TILE_SIZE);
+                ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 4) + TILE_SIZE, (this.y * TILE_SIZE) + (TILE_SIZE / 2));
+                ctx.fill();
+
+                // House Gable
+                ctx.fillStyle = mainColor;
+                ctx.beginPath();
+                ctx.moveTo((this.x * TILE_SIZE), (this.y * TILE_SIZE) + (TILE_SIZE / 2));
+                ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 2), (this.y * TILE_SIZE) + (TILE_SIZE / 6));
+                ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE, (this.y * TILE_SIZE) + (TILE_SIZE / 2));
+                ctx.fill();
+
+                // Doors and Windows
+                ctx.fillStyle = "#493a26";
+                switch(getRandomInt(0, 2)){
+                    case 0:
+                        ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 2.75), (this.y * TILE_SIZE) + (TILE_SIZE / 1.5) - (TILE_SIZE / 8), TILE_SIZE / 4, (TILE_SIZE / 3) + (TILE_SIZE / 8));  // door in the middle
+                        break;
+                    case 1:
+                        ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4), (this.y * TILE_SIZE) + (TILE_SIZE / 1.5) - (TILE_SIZE / 8), TILE_SIZE / 4, (TILE_SIZE / 3) + (TILE_SIZE / 8));  // door on the right
+                        ctx.fillStyle = "#443623";
+                        ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 1.55), (this.y * TILE_SIZE) + (TILE_SIZE / 1.66), TILE_SIZE / 5, TILE_SIZE / 5);
+                        break;
+                    case 2:
+                        ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 2), (this.y * TILE_SIZE) + (TILE_SIZE / 1.5) - (TILE_SIZE / 8), TILE_SIZE / 4, (TILE_SIZE / 3) + (TILE_SIZE / 8));  // door on the left
+                        ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 6.5), (this.y * TILE_SIZE) + (TILE_SIZE / 1.66), TILE_SIZE / 5, TILE_SIZE / 5);
+                        break;
+                }
+                break;
+            case "painted":
+                break;
+            default:
+                break;
+        }
     }
     generateForest(){
         if(this.feature == null){
@@ -212,17 +256,17 @@ class Tile{
         switch(this.type){
             case "plains":
                 if(Math.floor(Math.random() * 5000) == 0){
-                    this.drawHouse();
+                    this.drawHouse("wooden");
                 }
                 break;
             case "forest_edge":
                 if(Math.floor(Math.random() * 2500) == 0){
-                    this.drawHouse();
+                    this.drawHouse("wooden");
                 }
                 break;
             case "forest":
-                if(Math.floor(Math.random() * 1000) == 0){
-                    this.drawHouse();
+                if(Math.floor(Math.random() * 500) == 0){
+                    this.drawHouse("wooden");
                 }
                 break;
             default:
@@ -294,7 +338,7 @@ function drawVillage(){
             if(j > village_y - VILLAGE_RADIUS && j < village_y + VILLAGE_RADIUS && i > village_x - VILLAGE_RADIUS && i < village_x + VILLAGE_RADIUS){
                 if(Math.floor(Math.random() * 5) == 0){
                     if(mapTiles[j][i].type != "water" && mapTiles[j][i].feature == null){
-                        mapTiles[j][i].drawHouse();
+                        mapTiles[j][i].drawHouse("wooden");
                     }
                 }
             }
@@ -342,10 +386,21 @@ function nextDay(){
     month_name = months[month - 1];
 }
 
-console.log(`${day}.${month}.${year}\n${day_name}, ${day} ${month_name} ${year}`);
+function displayDate(){
+    console.log(`${day}.${month}.${year}\n${day_name}, ${day} ${month_name} ${year}`);
+}
+
 document.addEventListener("keydown", function(event){
     if(event.key === " "){
         nextDay();
-        console.log(`${day}.${month}.${year}\n${day_name}, ${day} ${month_name} ${year}`);
+        displayDate();
     }
 });
+
+function callNextDay(){
+    nextDay();
+    displayDate();
+}
+
+displayDate();
+//setInterval(callNextDay, 1000);
