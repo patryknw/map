@@ -16,14 +16,22 @@ const HEIGHT = canvas.height;
 
 var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+var seasons = ["Spring", "Summer", "Autumn", "Winter"];
 
 var day = 1;
 var month = 1;
 var year = 1619;
 var weekday_number = 2;
+var season = seasons[3];
 
 var day_name = days[1];
 var month_name = months[0];
+
+// Creating empty map array
+var mapTiles = Array.from({length: HEIGHT / TILE_SIZE});
+for(let i = 0; i < mapTiles.length; i++){
+    mapTiles[i] = Array.from({length: WIDTH / TILE_SIZE});
+}
 
 function getRandomInt(min, max){
     min = Math.ceil(min);
@@ -70,7 +78,7 @@ class Tile{
         if(this.type == "water"){ return };
         switch(true){
             case this.forestDensity <= 40:
-                    break;
+                break;
             case this.forestDensity > 40 && this.forestDensity <= 80:
                 this.type = "forest_edge";
                 break;
@@ -81,22 +89,74 @@ class Tile{
                 this.type = null;
         }
     }
-    drawTile(){
-        switch(this.type){
-            case "plains":
-                // ctx.fillStyle = "#348c31";
-                ctx.fillStyle = `rgb(52, ${137 + Math.floor(Math.random() * 6)}, 49)`;
+    drawTile(currentSeason){
+        switch(currentSeason){
+            case seasons[0]:  // Spring
+                switch(this.type){
+                    case "plains":
+                        ctx.fillStyle = `rgb(52, ${offsetColor(140, 3)}, 49)`;
+                        break;
+                    case "forest_edge":
+                        ctx.fillStyle = `rgb(46, ${offsetColor(131, 4)}, 43)`;
+                        break;
+                    case "forest":
+                        ctx.fillStyle = `rgb(38, ${offsetColor(117, 5)}, 36)`;
+                        break;
+                    case "water":
+                        ctx.fillStyle = "#4495cf";
+                        break;
+                }
                 break;
-            case "forest_edge":
-                // ctx.fillStyle = "#2E832B";
-                ctx.fillStyle = `rgb(46, ${127 + Math.floor(Math.random() * 8)}, 43)`;
+            case seasons[1]:  // Summer
+                switch(this.type){
+                    case "plains":
+                        ctx.fillStyle = `rgb(81, ${offsetColor(140, 3)}, 49)`;
+                        break;
+                    case "forest_edge":
+                        ctx.fillStyle = `rgb(46, ${offsetColor(131, 4)}, 43)`;
+                        break;
+                    case "forest":
+                        ctx.fillStyle = `rgb(38, ${offsetColor(117, 5)}, 36)`;
+                        break;
+                    case "water":
+                        ctx.fillStyle = "#4495cf";
+                        break;
+                }
                 break;
-            case "forest":
-                // ctx.fillStyle = "#267524";
-                ctx.fillStyle = `rgb(38, ${112 + Math.floor(Math.random() * 10)}, 36)`;
+            case seasons[2]:  // Autumn
+                switch(this.type){
+                    case "plains":
+                        ctx.fillStyle = `rgb(97, ${offsetColor(140, 3)}, 49)`;
+                        break;
+                    case "forest_edge":
+                        ctx.fillStyle = `rgb(46, ${offsetColor(131, 4)}, 43)`;
+                        break;
+                    case "forest":
+                        ctx.fillStyle = `rgb(38, ${offsetColor(117, 5)}, 36)`;
+                        break;
+                    case "water":
+                        ctx.fillStyle = "#4495cf";
+                        break;
+                }
                 break;
-            case "water":
-                ctx.fillStyle = "#4495cf";
+            case seasons[3]:  // Winter
+                switch(this.type){
+                    case "plains":
+                        ctx.fillStyle = `rgb(${offsetColor(255, 3)}, ${offsetColor(250, 3)}, ${offsetColor(250, 3)})`;
+                        break;
+                    case "forest_edge":
+                        ctx.fillStyle = `rgb(46, ${offsetColor(131, 4)}, 43)`;
+                        break;
+                    case "forest":
+                        ctx.fillStyle = `rgb(38, ${offsetColor(117, 5)}, 36)`;
+                        break;
+                    case "water":
+                        ctx.fillStyle = `rgb(${offsetColor(219, 2)}, ${offsetColor(241, 2)}, ${offsetColor(253, 2)})`;
+                        break;
+                }
+                break;
+            default:
+                console.log("No season found @ drawSeason(currentSeason)!");
                 break;
         }
         ctx.fillRect(this.x * TILE_SIZE, this.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -121,10 +181,10 @@ class Tile{
     }
     drawTree(type){
         this.feature = "tree";
-        // var offsetX = Math.floor(Math.random() * ((TILE_SIZE / 5) * 2) + 1) - (TILE_SIZE / 5);
-        // var offsetY = Math.floor(Math.random() * (TILE_SIZE / 5) * -2);
-        var offsetX = 0;
-        var offsetY = 0;
+        // let offsetX = Math.floor(Math.random() * ((TILE_SIZE / 5) * 2) + 1) - (TILE_SIZE / 5);
+        // let offsetY = Math.floor(Math.random() * (TILE_SIZE / 5) * -2);
+        let offsetX = 0;
+        let offsetY = 0;
         switch(type){
             case "deciduous":
                 ctx.fillStyle = "#503d28";
@@ -158,9 +218,9 @@ class Tile{
                 break;
             }
         }
-    drawHouse(type){
+    drawHouse(houseType){
         this.feature = "house";
-        switch(type){
+        switch(houseType){
             case "thatch":
                 break;
             case "wooden":
@@ -207,91 +267,20 @@ class Tile{
                 break;
         }
     }
-    generateForest(){
-        if(this.feature == null){
-            switch(this.type){
-                case "plains":
-                    if(Math.floor(Math.random() * 50) == 0){
-                        switch(Math.floor(Math.random() * 2)){
-                            case 0:
-                                this.drawTree("deciduous");
-                                break;
-                            case 1:
-                                this.drawTree("conifer");
-                                break;
-                        }
-                    }
-                    break;
-                case "forest_edge":
-                    if(Math.floor(Math.random() * 3) == 0){
-                        switch(Math.floor(Math.random() * 2)){
-                            case 0:
-                                this.drawTree("deciduous");
-                                break;
-                            case 1:
-                                this.drawTree("conifer");
-                                break;
-                        }
-                    }
-                    break;
-                case "forest":
-                    if(Math.floor(Math.random() * 5) != 0){
-                        switch(Math.floor(Math.random() * 2)){
-                            case 0:
-                                this.drawTree("deciduous");
-                                break;
-                            case 1:
-                                this.drawTree("conifer");
-                                break;
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    generateStandaloneHouse(){
-        if(this.feature != null){ return };
-        switch(this.type){
-            case "plains":
-                if(Math.floor(Math.random() * 5000) == 0){
-                    this.drawHouse("wooden");
-                }
-                break;
-            case "forest_edge":
-                if(Math.floor(Math.random() * 2500) == 0){
-                    this.drawHouse("wooden");
-                }
-                break;
-            case "forest":
-                if(Math.floor(Math.random() * 500) == 0){
-                    this.drawHouse("wooden");
-                }
-                break;
-            default:
-                break;
-        }
-    }
-}
-
-var mapTiles = Array.from({length: HEIGHT / TILE_SIZE});
-for(var i = 0; i < mapTiles.length; i++){
-    mapTiles[i] = Array.from({length: WIDTH / TILE_SIZE});
 }
 
 function getCursorLocation(event){
     if(event.clientX > WIDTH || event.clientY > HEIGHT) { return };
-    var mouseX = Math.floor(((event.clientX / TILE_SIZE) * TILE_SIZE) / TILE_SIZE);
-    var mouseY = Math.floor(((event.clientY / TILE_SIZE) * TILE_SIZE) / TILE_SIZE);
+    let mouseX = Math.floor(((event.clientX / TILE_SIZE) * TILE_SIZE) / TILE_SIZE);
+    let mouseY = Math.floor(((event.clientY / TILE_SIZE) * TILE_SIZE) / TILE_SIZE);
     console.log(mapTiles[mouseY][mouseX]);
 }
 window.addEventListener("click", getCursorLocation);
 
 function createMapTemplate(){
     noise.seed(Math.random());
-    for(var j = 0; j < mapTiles.length; j++){
-        for(var i = 0; i < mapTiles[j].length; i++){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
             mapTiles[j][i] = new Tile(i, j, null, null, null, null);
             mapTiles[j][i].setHeight(j, i);
             mapTiles[j][i].setTypeTopography();
@@ -299,46 +288,107 @@ function createMapTemplate(){
     }
 }
 
-createMapTemplate();
-
 function createForestTemplate(){
     noise.seed(Math.random());
-    for(var j = 0; j < mapTiles.length; j++){
-        for(var i = 0; i < mapTiles[j].length; i++){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
             mapTiles[j][i].setForestDensity(j, i);
             mapTiles[j][i].setTypeForest();
-            mapTiles[j][i].drawTile();
+        }
+    }
+}
+
+function drawFinalTile(){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            mapTiles[j][i].drawTile(season);
             mapTiles[j][i].drawShading();
         }
     }
 }
 
-createForestTemplate();
-
-function drawFeatures(){
-    for(var j = 0; j < mapTiles.length; j++){
-        for(var i = 0; i < mapTiles[j].length; i++){
-            mapTiles[j][i].generateForest();
-            mapTiles[j][i].generateStandaloneHouse();
+function generateForest(){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            if(mapTiles[j][i].feature == null){
+                switch(mapTiles[j][i].type){
+                    case "plains":
+                        if(getRandomInt(0, 50) == 0) mapTiles[j][i].feature = "tree";
+                        break;
+                    case "forest_edge":
+                        if(getRandomInt(0, 2) == 0) mapTiles[j][i].feature = "tree";
+                        break;
+                    case "forest":
+                        if(getRandomInt(0, 4) != 0) mapTiles[j][i].feature = "tree";
+                        break;
+                    case "water":
+                        break;
+                    default:
+                        console.log("No biome given @ generateForest()");
+                        break;
+                }
+            }
         }
     }
 }
 
-function drawVillage(){
+function drawForest(){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            if(mapTiles[j][i].feature == "tree"){
+                switch(getRandomInt(0, 1)){
+                    case 0:
+                        mapTiles[j][i].drawTree("deciduous");
+                        break;
+                    case 1:
+                        mapTiles[j][i].drawTree("conifer");
+                        break;
+                }
+            }
+        }
+    }
+}
+
+function generateStandaloneHouse(){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            if(mapTiles[j][i].feature == null){
+                switch(mapTiles[j][i].type){
+                    case "plains":
+                        if(getRandomInt(0, 5000) == 0) mapTiles[j][i].feature = "house";
+                        break;
+                    case "forest_edge":
+                        if(getRandomInt(0, 2500) == 0) mapTiles[j][i].feature = "house";
+                        break;
+                    case "forest":
+                        if(getRandomInt(0, 500) == 0) mapTiles[j][i].feature = "house";
+                        break;
+                    case "water":
+                        break;
+                    default:
+                        console.log("No biome given @ generateStandaloneHouse()");
+                        break;
+                }
+            }
+        }
+    }
+}
+
+function generateVillage(){
     const VILLAGE_RADIUS = getRandomInt(3, 5);
 
-    var village_x = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), WIDTH - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
-    var village_y = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), HEIGHT - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
+    let village_x = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), WIDTH - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
+    let village_y = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), HEIGHT - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
 
-    for(var j = 0; j < mapTiles.length; j++){
-        for(var i = 0; i < mapTiles[j].length; i++){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
             /*if(j == village_y && i == village_x){  // Center of village
                 mapTiles[j][i].drawPerlinDebug();
             }*/
             if(j > village_y - VILLAGE_RADIUS && j < village_y + VILLAGE_RADIUS && i > village_x - VILLAGE_RADIUS && i < village_x + VILLAGE_RADIUS){
-                if(Math.floor(Math.random() * 5) == 0){
+                if(getRandomInt(0, 4) == 0){
                     if(mapTiles[j][i].type != "water" && mapTiles[j][i].feature == null){
-                        mapTiles[j][i].drawHouse("wooden");
+                        mapTiles[j][i].feature = "house";
                     }
                 }
             }
@@ -346,8 +396,15 @@ function drawVillage(){
     }
 }
 
-drawVillage();
-drawFeatures();
+function drawSingleHouse(){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            if(mapTiles[j][i].feature == "house"){
+                mapTiles[j][i].drawHouse("wooden");
+            }
+        }
+    }
+}
 
 function nextDay(){
     day++;
@@ -383,24 +440,54 @@ function nextDay(){
             }
         }
     }
+
+    switch(month){
+        case 3:
+            if(day == 20) season = seasons[0];
+            break;
+        case 6:
+            if(day == 21) season = seasons[1];
+            break;
+        case 9:
+            if(day == 23) season = seasons[2];
+            break;
+        case 12:
+            if(day == 21) season = seasons[3];
+            break;
+    }
     month_name = months[month - 1];
 }
 
 function displayDate(){
-    console.log(`${day}.${month}.${year}\n${day_name}, ${day} ${month_name} ${year}`);
+    console.log(`${day}.${month}.${year}\n${season}\n${day_name}, ${day} ${month_name} ${year}`);
 }
 
-document.addEventListener("keydown", function(event){
-    if(event.key === " "){
-        nextDay();
-        displayDate();
-    }
-});
-
-function callNextDay(){
-    nextDay();
+function init(){
+    createMapTemplate();
+    createForestTemplate();
+    drawFinalTile();
+    generateForest();
+    generateStandaloneHouse();
+    generateVillage();
+    drawSingleHouse();
+    drawForest();
     displayDate();
 }
+init();
 
-displayDate();
-//setInterval(callNextDay, 1000);
+function update(){
+    nextDay();
+    displayDate();
+    drawFinalTile();
+    drawForest();
+    drawSingleHouse();
+}
+
+function fastForwardTime(event){
+    if(event.key === " "){
+        update();
+    }
+}
+document.addEventListener("keydown", fastForwardTime);
+
+//setInterval(update, 1000);
