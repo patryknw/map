@@ -311,7 +311,7 @@ function nextDay(){
     if(weekday_number == 8){ weekday_number = 1; }
     day_name = days[weekday_number - 1];
 
-    if(day == 32){
+    if(day == 31 + 1){
         if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){
             day = 1;
             if(month != 12){
@@ -321,14 +321,23 @@ function nextDay(){
                 month = 1;
             }
         }
-    } else if(day == 31){
+    } else if(day == 30 + 1){
         if(month == 4 || month == 6 || month == 9 || month == 11){
             day = 1;
             month++;
         }
-    } else if(day == 29 && month == 2){
-        day = 1;
-        month++;
+    } else if(month == 2){
+        if((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0)){
+            if(day == 29 + 1){
+                day = 1;
+                month++;
+            }
+        } else{
+            if(day == 28 + 1){
+                day = 1;
+                month++;
+            }
+        }
     }
     month_name = months[month - 1];
 }
