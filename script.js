@@ -68,8 +68,37 @@ class Tree{
     }
 }
 
+class House{
+    constructor(type, houseColor, roofColor, variant){
+        this.type = type;
+        this.houseColor = houseColor;
+        this.roofColor = roofColor;
+        this.variant = variant;
+    }
+    assignType(){
+        this.type = "wooden";
+    }
+    assignColor(){
+        this.houseColor = `rgb(${offsetNumber(92, 4)}, ${offsetNumber(74, 4)}, ${offsetNumber(48, 4)})`;
+        this.roofColor = `rgb(${offsetNumber(77, 4)}, ${offsetNumber(61, 4)}, ${offsetNumber(39, 4)})`;
+    }
+    assignVariant(){
+        switch(getRandomInt(0, 2)){
+            case 0:
+                this.variant = 0;
+                break;
+            case 1:
+                this.variant = 1;
+                break;
+            case 2:
+                this.variant = 2;
+                break;
+        }
+    }
+}
+
 class Tile{
-    constructor(x, y, type, height, forestDensity, color, feature, tree){
+    constructor(x, y, type, height, forestDensity, color, feature, tree, house){
         this.x = x;
         this.y = y;
         this.type = type;
@@ -78,6 +107,7 @@ class Tile{
         this.color = color;
         this.feature = feature;
         this.tree = tree;
+        this.house = house;
     }
     setHeight(x, y){
         this.height = Math.floor(Math.abs(noise.perlin2(x / 50, y / 50)) * 256)  // 50 being scale for perlin noise
@@ -253,18 +283,19 @@ class Tile{
                 break;
         }
     }
-    drawHouse(houseType){
+    drawHouse(houseType, houseColor, roofColor, houseVariant){
         this.feature = "house";
         switch(houseType){
             case "thatch":
                 break;
             case "wooden":
                 // House Body
-                let mainColor = ctx.fillStyle = `rgb(${offsetNumber(92, 4)}, ${offsetNumber(74, 4)}, ${offsetNumber(48, 4)})`;
+                let mainColor = houseColor;
+                ctx.fillStyle = mainColor;
                 ctx.fillRect(this.x * TILE_SIZE, (this.y * TILE_SIZE) + (TILE_SIZE / 2), TILE_SIZE, TILE_SIZE / 2);
 
                 // House Roof
-                ctx.fillStyle = `rgb(${offsetNumber(77, 4)}, ${offsetNumber(61, 4)}, ${offsetNumber(39, 4)})`;
+                ctx.fillStyle = roofColor;
                 ctx.beginPath();
                 ctx.moveTo((this.x * TILE_SIZE) - (TILE_SIZE / 4), (this.y * TILE_SIZE) + (TILE_SIZE / 2));
                 ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 2), this.y * TILE_SIZE);
@@ -281,7 +312,7 @@ class Tile{
 
                 // Doors and Windows
                 ctx.fillStyle = "#493a26";
-                switch(getRandomInt(0, 2)){
+                switch(houseVariant){
                     case 0:
                         ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 2.75), (this.y * TILE_SIZE) + (TILE_SIZE / 1.5) - (TILE_SIZE / 8), TILE_SIZE / 4, (TILE_SIZE / 3) + (TILE_SIZE / 8));  // door in the middle
                         break;
@@ -292,6 +323,7 @@ class Tile{
                         break;
                     case 2:
                         ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 2), (this.y * TILE_SIZE) + (TILE_SIZE / 1.5) - (TILE_SIZE / 8), TILE_SIZE / 4, (TILE_SIZE / 3) + (TILE_SIZE / 8));  // door on the left
+                        ctx.fillStyle = "#443623";
                         ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 6.5), (this.y * TILE_SIZE) + (TILE_SIZE / 1.66), TILE_SIZE / 5, TILE_SIZE / 5);
                         break;
                 }
@@ -316,7 +348,7 @@ function createMapTemplate(){
     noise.seed(Math.random());
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
-            mapTiles[j][i] = new Tile(i, j, null, null, null, null, null, null);
+            mapTiles[j][i] = new Tile(i, j, null, null, null, null, null, null, null);
             mapTiles[j][i].setHeight(j, i);
             mapTiles[j][i].setTypeTopography();
         }
@@ -343,7 +375,7 @@ function drawFinalTile(){
     }
 }
 
-function updateTileColor(){
+function assignTileColor(){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
             mapTiles[j][i].assignColor(season);
@@ -351,26 +383,26 @@ function updateTileColor(){
     }
 }
 
-function callUpdateTileColor(month){
+function updateTileColor(){
     switch(month){
         case 3:
             if(day == springStart){
-                updateTileColor();
+                assignTileColor();
             }
             break;
         case 6:
             if(day == summerStart){
-                updateTileColor();
+                assignTileColor();
             }
             break;
         case 9:
             if(day == autumnStart){
-                updateTileColor();
+                assignTileColor();
             }
             break;
         case 12:
             if(day == winterStart){
-                updateTileColor();
+                assignTileColor();
             }
             break;
     }
@@ -438,13 +470,31 @@ function generateStandaloneHouse(){
             if(mapTiles[j][i].feature == null){
                 switch(mapTiles[j][i].type){
                     case "plains":
-                        if(getRandomInt(0, 5000) == 0) mapTiles[j][i].feature = "house";
+                        if(getRandomInt(0, 5000) == 0){
+                            mapTiles[j][i].feature = "house";
+                            mapTiles[j][i].house = new House(null, null, null, null);
+                            mapTiles[j][i].house.assignType();
+                            mapTiles[j][i].house.assignColor();
+                            mapTiles[j][i].house.assignVariant();
+                        }
                         break;
                     case "forest_edge":
-                        if(getRandomInt(0, 2500) == 0) mapTiles[j][i].feature = "house";
+                        if(getRandomInt(0, 2500) == 0){
+                            mapTiles[j][i].feature = "house";
+                            mapTiles[j][i].house = new House(null, null, null, null);
+                            mapTiles[j][i].house.assignType();
+                            mapTiles[j][i].house.assignColor();
+                            mapTiles[j][i].house.assignVariant();
+                        }
                         break;
                     case "forest":
-                        if(getRandomInt(0, 500) == 0) mapTiles[j][i].feature = "house";
+                        if(getRandomInt(0, 500) == 0){
+                            mapTiles[j][i].feature = "house";
+                            mapTiles[j][i].house = new House(null, null, null, null);
+                            mapTiles[j][i].house.assignType();
+                            mapTiles[j][i].house.assignColor();
+                            mapTiles[j][i].house.assignVariant();
+                        }
                         break;
                     case "water":
                         break;
@@ -472,6 +522,10 @@ function generateVillage(){
                 if(getRandomInt(0, 4) == 0){
                     if(mapTiles[j][i].type != "water" && mapTiles[j][i].feature == null){
                         mapTiles[j][i].feature = "house";
+                        mapTiles[j][i].house = new House(null, null, null, null);
+                        mapTiles[j][i].house.assignType();
+                        mapTiles[j][i].house.assignColor();
+                        mapTiles[j][i].house.assignVariant();
                     }
                 }
             }
@@ -483,7 +537,7 @@ function drawHouses(){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
             if(mapTiles[j][i].feature == "house"){
-                mapTiles[j][i].drawHouse("wooden");
+                mapTiles[j][i].drawHouse(mapTiles[j][i].house.type, mapTiles[j][i].house.houseColor, mapTiles[j][i].house.roofColor, mapTiles[j][i].house.variant);
             }
         }
     }
@@ -541,8 +595,15 @@ function nextDay(){
     month_name = months[month - 1];
 }
 
-function displayDate(){
-    console.log(`${day}.${month}.${year}\n${season}\n${day_name}, ${day} ${month_name} ${year}`);
+function displayDate(inConsole, onScreen){
+    if(inConsole) console.log(`${day}.${month}.${year}\n${season}\n${day_name}, ${day} ${month_name} ${year}`);
+    if(onScreen){
+        ctx.fillStyle = "#000000";
+        ctx.font = "bold 24px Pristina";
+        ctx.textAlign = "center";
+        ctx.fillText(`${season}`, WIDTH / 2, HEIGHT / 20);
+        ctx.fillText(`${day_name}, ${day} ${month_name} ${year}`, WIDTH / 2, HEIGHT / 11);
+    }
 }
 
 function init(){
@@ -554,17 +615,17 @@ function init(){
     generateForest();
     drawHouses();
     drawForest();
-    displayDate();
+    displayDate(true, true);
 }
 init();
 
 function update(){
     nextDay();
-    displayDate();
-    callUpdateTileColor(month);
+    updateTileColor();
     drawFinalTile();
     drawHouses();
     drawForest();
+    displayDate(true, true);
 }
 
 function fastForwardTime(event){
