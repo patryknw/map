@@ -5,7 +5,6 @@
  * zoom mechanic
  * land fertility mechanic
  * forest generation fully based on perlin
- * fix deciduous tree trunk seam
  */
 
 var canvas = document.getElementById("canvas");
@@ -49,20 +48,89 @@ function offsetNumber(color, offset){
 }
 
 class Tree{
-    constructor(type, color, targetColor){
+    constructor(type, leavesColor, trunkColor, hasLeaves){
         this.type = type;
-        this.color = color;
-        this.targetColor = targetColor;
+        this.leavesColor = leavesColor;
+        this.trunkColor = trunkColor;
+        this.hasLeaves = hasLeaves;
     }
     assignType(){
         switch(getRandomInt(0, 1)){
             case 0:
                 this.type = "deciduous";
-                this.color = `rgb(${offsetNumber(46, 3)}, ${offsetNumber(100, 13)}, 31)`;
                 break;
             case 1:
                 this.type = "conifer";
-                this.color = `rgb(16, ${offsetNumber(49, 3)}, ${offsetNumber(20, 6)})`;
+                break;
+        }
+    }
+    assignLeavesColor(){
+        switch(season){
+            case seasons[0]:  // Spring
+                switch(this.type){
+                    case "deciduous":
+                        this.hasLeaves = true;
+                        this.leavesColor = `rgb(${offsetNumber(46, 3)}, ${offsetNumber(100, 13)}, 31)`;
+                        break;
+                    case "conifer":
+                        this.leavesColor = `rgb(16, ${offsetNumber(49, 3)}, ${offsetNumber(20, 6)})`;
+                        break;
+                }
+                break;
+            case seasons[1]:  // Summer
+                switch(this.type){
+                    case "deciduous":
+                        this.hasLeaves = true;
+                        this.leavesColor = `rgb(${offsetNumber(54, 3)}, ${offsetNumber(104, 13)}, 31)`;
+                        break;
+                    case "conifer":
+                        this.leavesColor = `rgb(17, ${offsetNumber(53, 3)}, ${offsetNumber(18, 6)})`;
+                        break;
+                }
+                break;
+            case seasons[2]:  // Autumn
+                switch(this.type){
+                    case "deciduous":
+                        this.hasLeaves = true;
+                        switch(getRandomInt(0, 3)){
+                            case 0:
+                                this.leavesColor = `rgb(${offsetNumber(102, 6)}, ${offsetNumber(125, 10)}, ${offsetNumber(37, 4)})`;
+                                break;
+                            case 1:
+                                this.leavesColor = `rgb(${offsetNumber(168, 8)}, ${offsetNumber(168, 12)}, ${offsetNumber(41, 4)})`;
+                                break;
+                            case 2:
+                                this.leavesColor = `rgb(${offsetNumber(159, 12)}, ${offsetNumber(88, 12)}, ${offsetNumber(26, 4)})`;
+                                break;
+                            case 3:
+                                this.leavesColor = `rgb(${offsetNumber(153, 6)}, ${offsetNumber(37, 6)}, ${offsetNumber(31, 4)})`;
+                                break;
+                        }
+                        break;
+                    case "conifer":
+                        this.leavesColor = `rgb(19, ${offsetNumber(50, 3)}, ${offsetNumber(18, 6)})`;
+                        break;
+                }
+                break;
+            case seasons[3]:  // Winter
+                switch(this.type){
+                    case "deciduous":
+                        this.hasLeaves = false;
+                        break;
+                    case "conifer":
+                        this.leavesColor = `rgb(16, ${offsetNumber(49, 3)}, ${offsetNumber(28, 8)})`;
+                        break;
+                }
+                break;
+        }
+    }
+    assignTrunkColor(){
+        switch(this.type){
+            case "deciduous":
+                this.trunkColor = `rgb(${offsetNumber(80, 3)}, ${offsetNumber(61, 3)}, ${offsetNumber(40, 3)})`;
+                break;
+            case "conifer":
+                this.trunkColor = `rgb(${offsetNumber(64, 3)}, ${offsetNumber(49, 3)}, ${offsetNumber(33, 3)})`;
                 break;
         }
     }
@@ -146,8 +214,8 @@ class Tile{
                 this.type = null;
         }
     }
-    assignColor(currentSeason){
-        switch(currentSeason){
+    assignColor(){
+        switch(season){
             case seasons[0]:  // Spring
                 switch(this.type){
                     case "plains":
@@ -216,7 +284,7 @@ class Tile{
                 }
                 break;
             default:
-                console.log("No season found @ assignColor(currentSeason)!");
+                console.log("No season found @ assignColor()!");
                 break;
         }
     }
@@ -242,7 +310,7 @@ class Tile{
         ctx.fillRect(this.x * TILE_SIZE, this.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         ctx.globalCompositeOperation = "source-over";
     }
-    drawTree(treeType, treeColor){
+    drawTree(treeType, leavesColor, trunkColor, hasLeaves){
         this.feature = "tree";
         // let offsetX = Math.floor(Math.random() * ((TILE_SIZE / 5) * 2) + 1) - (TILE_SIZE / 5);
         // let offsetY = Math.floor(Math.random() * (TILE_SIZE / 5) * -2);
@@ -250,21 +318,27 @@ class Tile{
         let offsetY = 0;
         switch(treeType){
             case "deciduous":
-                ctx.fillStyle = "#503d28";  // Trunk color
-                ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY, TILE_SIZE / 4, TILE_SIZE / 2);
-                //ctx.fillStyle = "#31691f";
-                ctx.fillStyle = treeColor;  // Leaves color
-                //ctx.fillStyle = `rgb(${offsetNumber(46, 3)}, ${offsetNumber(100, 13)}, 31)`;
-                ctx.beginPath();
-                ctx.arc(((this.x * TILE_SIZE) + (TILE_SIZE / 2)) + offsetX, (this.y * TILE_SIZE) + offsetY, TILE_SIZE / 2, 0, 2 * Math.PI);
-                ctx.fill();
+                // Trunk
+                ctx.fillStyle = trunkColor;
+                ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 8) + offsetY, TILE_SIZE / 4, (TILE_SIZE / 2) + (TILE_SIZE / 8));
+
+                // Leaves
+                if(hasLeaves){
+                    ctx.fillStyle = leavesColor;
+                    ctx.beginPath();
+                    ctx.arc(((this.x * TILE_SIZE) + (TILE_SIZE / 2)) + offsetX, (this.y * TILE_SIZE) + offsetY, TILE_SIZE / 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                } else{
+                    /*ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4) + (TILE_SIZE / 16) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 2) + offsetY, (TILE_SIZE / 4) - (TILE_SIZE / 8), (TILE_SIZE / 2) + (TILE_SIZE / 2));*/
+                }
                 break;
             case "conifer":
-                ctx.fillStyle = "#403121";  // Trunk color
+                // Trunk
+                ctx.fillStyle = trunkColor;
                 ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY, TILE_SIZE / 4, TILE_SIZE / 2);
-                //ctx.fillStyle = "#102e0e";
-                ctx.fillStyle = treeColor;  // Needles color
-                //ctx.fillStyle = `rgb(16, ${offsetNumber(49, 3)}, ${offsetNumber(20, 6)})`;
+
+                // Needles
+                ctx.fillStyle = leavesColor;
                 ctx.beginPath();
                 ctx.moveTo((this.x * TILE_SIZE) + offsetX, (this.y * TILE_SIZE) + TILE_SIZE - (TILE_SIZE / 4) + offsetY);
                 ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + offsetY);
@@ -361,7 +435,7 @@ function createForestTemplate(){
         for(let i = 0; i < mapTiles[j].length; i++){
             mapTiles[j][i].setForestDensity(j, i);
             mapTiles[j][i].setTypeForest();
-            mapTiles[j][i].assignColor(season);
+            mapTiles[j][i].assignColor();
         }
     }
 }
@@ -375,34 +449,35 @@ function drawFinalTile(){
     }
 }
 
-function assignTileColor(){
+function assignSeasonColor(){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
-            mapTiles[j][i].assignColor(season);
+            mapTiles[j][i].assignColor();
+            if(mapTiles[j][i].feature == "tree") mapTiles[j][i].tree.assignLeavesColor();
         }
     }
 }
 
-function updateTileColor(){
+function updateSeasonColor(){
     switch(month){
         case 3:
             if(day == springStart){
-                assignTileColor();
+                assignSeasonColor();
             }
             break;
         case 6:
             if(day == summerStart){
-                assignTileColor();
+                assignSeasonColor();
             }
             break;
         case 9:
             if(day == autumnStart){
-                assignTileColor();
+                assignSeasonColor();
             }
             break;
         case 12:
             if(day == winterStart){
-                assignTileColor();
+                assignSeasonColor();
             }
             break;
     }
@@ -418,6 +493,8 @@ function generateForest(){
                             mapTiles[j][i].feature = "tree";
                             mapTiles[j][i].tree = new Tree(null, null, null);
                             mapTiles[j][i].tree.assignType();
+                            mapTiles[j][i].tree.assignLeavesColor();
+                            mapTiles[j][i].tree.assignTrunkColor();
                         }
                         break;
                     case "forest_edge":
@@ -425,6 +502,8 @@ function generateForest(){
                             mapTiles[j][i].feature = "tree";
                             mapTiles[j][i].tree = new Tree(null, null, null);
                             mapTiles[j][i].tree.assignType();
+                            mapTiles[j][i].tree.assignLeavesColor();
+                            mapTiles[j][i].tree.assignTrunkColor();
                         }
                         break;
                     case "forest":
@@ -432,6 +511,8 @@ function generateForest(){
                             mapTiles[j][i].feature = "tree";
                             mapTiles[j][i].tree = new Tree(null, null, null);
                             mapTiles[j][i].tree.assignType();
+                            mapTiles[j][i].tree.assignLeavesColor();
+                            mapTiles[j][i].tree.assignTrunkColor();
                         }
                         break;
                     case "water":
@@ -451,12 +532,10 @@ function drawForest(){
             if(mapTiles[j][i].feature == "tree"){
                 switch(getRandomInt(0, 1)){
                     case 0:
-                        //mapTiles[j][i].drawTree("deciduous", "#31691f");
-                        mapTiles[j][i].drawTree(mapTiles[j][i].tree.type, mapTiles[j][i].tree.color);
+                        mapTiles[j][i].drawTree(mapTiles[j][i].tree.type, mapTiles[j][i].tree.leavesColor, mapTiles[j][i].tree.trunkColor, mapTiles[j][i].tree.hasLeaves);
                         break;
                     case 1:
-                        //mapTiles[j][i].drawTree("conifer", "#102e0e");
-                        mapTiles[j][i].drawTree(mapTiles[j][i].tree.type, mapTiles[j][i].tree.color);
+                        mapTiles[j][i].drawTree(mapTiles[j][i].tree.type, mapTiles[j][i].tree.leavesColor, mapTiles[j][i].tree.trunkColor, mapTiles[j][i].tree.hasLeaves);
                         break;
                 }
             }
@@ -488,7 +567,7 @@ function generateStandaloneHouse(){
                         }
                         break;
                     case "forest":
-                        if(getRandomInt(0, 500) == 0){
+                        if(getRandomInt(0, 750) == 0){
                             mapTiles[j][i].feature = "house";
                             mapTiles[j][i].house = new House(null, null, null, null);
                             mapTiles[j][i].house.assignType();
@@ -599,7 +678,7 @@ function displayDate(inConsole, onScreen){
     if(inConsole) console.log(`${day}.${month}.${year}\n${season}\n${day_name}, ${day} ${month_name} ${year}`);
     if(onScreen){
         ctx.fillStyle = "#000000";
-        ctx.font = "bold 24px Pristina";
+        ctx.font = `bold ${Math.floor(WIDTH / 66)}px Pristina`;
         ctx.textAlign = "center";
         ctx.fillText(`${season}`, WIDTH / 2, HEIGHT / 20);
         ctx.fillText(`${day_name}, ${day} ${month_name} ${year}`, WIDTH / 2, HEIGHT / 11);
@@ -621,13 +700,14 @@ init();
 
 function update(){
     nextDay();
-    updateTileColor();
+    updateSeasonColor();
     drawFinalTile();
     drawHouses();
     drawForest();
     displayDate(true, true);
 }
 
+// User input
 function fastForwardTime(event){
     if(event.key === " "){
         update();
@@ -635,4 +715,17 @@ function fastForwardTime(event){
 }
 document.addEventListener("keydown", fastForwardTime);
 
-//setInterval(update, 1000);
+function toggleTime(event){
+    if(event.key === "Enter"){
+        if(isPaused){
+            isPaused = false;
+            update();
+            updateInterval = setInterval(update, 1000);
+        } else{
+            isPaused = true;
+            clearInterval(updateInterval);
+        }
+    }
+}
+document.addEventListener("keyup", toggleTime);
+var isPaused = true;
