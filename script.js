@@ -1,7 +1,6 @@
 /* TODO
- * drawing of forest happens on another layer
  * village prosperity
- * different house variants based on "richness" of the village (eg. white houses from Zalipie)
+ * different house variants based on the village's wealth (eg. white houses from Zalipie village)
  * zoom mechanic
  * land fertility mechanic
  * forest generation fully based on perlin
@@ -200,7 +199,7 @@ class Tile{
         }
     }
     setTypeForest(){
-        if(this.type == "water"){ return };
+        if(this.type == "water") return;
         switch(true){
             case this.forestDensity <= 40:
                 break;
@@ -411,7 +410,7 @@ class Tile{
 }
 
 function getCursorLocation(event){
-    if(event.clientX > WIDTH || event.clientY > HEIGHT) { return };
+    if(event.clientX > WIDTH || event.clientY > HEIGHT) return;
     let mouseX = Math.floor(((event.clientX / TILE_SIZE) * TILE_SIZE) / TILE_SIZE);
     let mouseY = Math.floor(((event.clientY / TILE_SIZE) * TILE_SIZE) / TILE_SIZE);
     console.log(mapTiles[mouseY][mouseX]);
@@ -682,6 +681,8 @@ function displayDate(inConsole, onScreen){
         ctx.textAlign = "center";
         ctx.fillText(`${season}`, WIDTH / 2, HEIGHT / 20);
         ctx.fillText(`${day_name}, ${day} ${month_name} ${year}`, WIDTH / 2, HEIGHT / 11);
+        //ctx.fillText(`${day} ${month_name} ${year}`, WIDTH / 2, HEIGHT / 11);
+        //ctx.fillText(`${day_name}`, WIDTH / 2, HEIGHT / 8);
     }
 }
 
@@ -705,27 +706,42 @@ function update(){
     drawHouses();
     drawForest();
     displayDate(true, true);
+    console.log(updateTickSpeed);
 }
 
 // User input
 function fastForwardTime(event){
-    if(event.key === " "){
+    if(event.key === "Enter"){
         update();
     }
 }
 document.addEventListener("keydown", fastForwardTime);
 
+function changeTimeSped(event){
+    if(event.deltaY > 0 && updateTickSpeed < 2000){
+        clearInterval(updateInterval);
+        updateTickSpeed += 50;
+        updateInterval = setInterval(update, updateTickSpeed);
+    } else if(event.deltaY < 0 && updateTickSpeed > 50){
+        clearInterval(updateInterval);
+        updateTickSpeed += -50;
+        updateInterval = setInterval(update, updateTickSpeed);
+    }
+}
+var updateTickSpeed = 1000;
+document.addEventListener("wheel", changeTimeSped);
+
 function toggleTime(event){
-    if(event.key === "Enter"){
+    if(event.key === " "){
         if(isPaused){
             isPaused = false;
             update();
-            updateInterval = setInterval(update, 1000);
+            updateInterval = setInterval(update, updateTickSpeed);
         } else{
             isPaused = true;
             clearInterval(updateInterval);
         }
     }
 }
-document.addEventListener("keyup", toggleTime);
 var isPaused = true;
+document.addEventListener("keyup", toggleTime);
