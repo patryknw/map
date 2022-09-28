@@ -72,7 +72,7 @@ class Tree{
                         this.leavesColor = `rgb(${offsetNumber(46, 3)}, ${offsetNumber(100, 13)}, 31)`;
                         break;
                     case "conifer":
-                        this.leavesColor = `rgb(16, ${offsetNumber(49, 3)}, ${offsetNumber(20, 6)})`;
+                        this.leavesColor = `rgb(${offsetNumber(16, 5)}, 49, ${offsetNumber(20, 6)})`;
                         break;
                 }
                 break;
@@ -83,7 +83,7 @@ class Tree{
                         this.leavesColor = `rgb(${offsetNumber(54, 3)}, ${offsetNumber(104, 13)}, 31)`;
                         break;
                     case "conifer":
-                        this.leavesColor = `rgb(17, ${offsetNumber(53, 3)}, ${offsetNumber(18, 6)})`;
+                        this.leavesColor = `rgb(${offsetNumber(19, 8)}, 53, ${offsetNumber(18, 5)})`;
                         break;
                 }
                 break;
@@ -91,23 +91,26 @@ class Tree{
                 switch(this.type){
                     case "deciduous":
                         this.hasLeaves = true;
-                        switch(getRandomInt(0, 3)){
+                        switch(getRandomInt(0, 4)){
                             case 0:
-                                this.leavesColor = `rgb(${offsetNumber(102, 6)}, ${offsetNumber(125, 10)}, ${offsetNumber(37, 4)})`;
+                                this.leavesColor = `rgb(${offsetNumber(155, 8)}, ${offsetNumber(149, 8)}, ${offsetNumber(34, 8)})`;
                                 break;
                             case 1:
-                                this.leavesColor = `rgb(${offsetNumber(168, 8)}, ${offsetNumber(168, 12)}, ${offsetNumber(41, 4)})`;
+                                this.leavesColor = `rgb(${offsetNumber(211, 2)}, ${offsetNumber(150, 2)}, ${offsetNumber(39, 2)})`;
                                 break;
                             case 2:
-                                this.leavesColor = `rgb(${offsetNumber(159, 12)}, ${offsetNumber(88, 12)}, ${offsetNumber(26, 4)})`;
+                                this.leavesColor = `rgb(${offsetNumber(198, 8)}, ${offsetNumber(118, 8)}, ${offsetNumber(14, 8)})`;
                                 break;
                             case 3:
-                                this.leavesColor = `rgb(${offsetNumber(153, 6)}, ${offsetNumber(37, 6)}, ${offsetNumber(31, 4)})`;
+                                this.leavesColor = `rgb(${offsetNumber(190, 8)}, ${offsetNumber(62, 8)}, ${offsetNumber(24, 8)})`;
+                                break;
+                            case 4:
+                                this.leavesColor = `rgb(${offsetNumber(164, 8)}, ${offsetNumber(37, 8)}, ${offsetNumber(22, 8)})`;
                                 break;
                         }
                         break;
                     case "conifer":
-                        this.leavesColor = `rgb(19, ${offsetNumber(50, 3)}, ${offsetNumber(18, 6)})`;
+                        this.leavesColor = `rgb(${offsetNumber(25, 8)}, 50, ${offsetNumber(10, 5)})`;
                         break;
                 }
                 break;
@@ -117,7 +120,7 @@ class Tree{
                         this.hasLeaves = false;
                         break;
                     case "conifer":
-                        this.leavesColor = `rgb(16, ${offsetNumber(49, 3)}, ${offsetNumber(28, 8)})`;
+                        this.leavesColor = `rgb(${offsetNumber(21, 5)}, 49, ${offsetNumber(28, 6)})`;
                         break;
                 }
                 break;
@@ -126,10 +129,10 @@ class Tree{
     assignTrunkColor(){
         switch(this.type){
             case "deciduous":
-                this.trunkColor = `rgb(${offsetNumber(80, 3)}, ${offsetNumber(61, 3)}, ${offsetNumber(40, 3)})`;
+                this.trunkColor = `rgb(${offsetNumber(80, 5)}, ${offsetNumber(61, 5)}, ${offsetNumber(40, 5)})`;
                 break;
             case "conifer":
-                this.trunkColor = `rgb(${offsetNumber(64, 3)}, ${offsetNumber(49, 3)}, ${offsetNumber(33, 3)})`;
+                this.trunkColor = `rgb(${offsetNumber(64, 5)}, ${offsetNumber(49, 5)}, ${offsetNumber(33, 5)})`;
                 break;
         }
     }
@@ -250,13 +253,13 @@ class Tile{
             case seasons[2]:  // Autumn
                 switch(this.type){
                     case "plains":
-                        this.color = `rgb(81, ${offsetNumber(140, 3)}, 49)`;
+                        this.color = `rgb(104, ${offsetNumber(131, 3)}, 38)`;
                         break;
                     case "forest_edge":
-                        this.color = `rgb(75, ${offsetNumber(131, 4)}, 43)`;
+                        this.color = `rgb(${offsetNumber(99, 3)}, ${offsetNumber(122, 3)}, ${offsetNumber(32, 3)})`;
                         break;
                     case "forest":
-                        this.color = `rgb(67, ${offsetNumber(117, 5)}, 36)`;
+                        this.color = `rgb(${offsetNumber(97, 5)}, ${offsetNumber(117, 5)}, ${offsetNumber(24, 5)})`;
                         break;
                     case "water":
                         this.color = "#4495cf";
@@ -270,11 +273,11 @@ class Tile{
                         this.color = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
                         break;
                     case "forest_edge":
-                        var snowColor = offsetNumber(238, 2);
+                        var snowColor = offsetNumber(239, 2);
                         this.color = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
                         break;
                     case "forest":
-                        var snowColor = offsetNumber(234, 2);
+                        var snowColor = offsetNumber(235, 3);
                         this.color = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
                         break;
                     case "water":
@@ -328,7 +331,36 @@ class Tile{
                     ctx.arc(((this.x * TILE_SIZE) + (TILE_SIZE / 2)) + offsetX, (this.y * TILE_SIZE) + offsetY, TILE_SIZE / 2, 0, 2 * Math.PI);
                     ctx.fill();
                 } else{
-                    /*ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4) + (TILE_SIZE / 16) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 2) + offsetY, (TILE_SIZE / 4) - (TILE_SIZE / 8), (TILE_SIZE / 2) + (TILE_SIZE / 2));*/
+                    ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4) + (TILE_SIZE / 16) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 2) + offsetY, (TILE_SIZE / 4) - (TILE_SIZE / 8), (TILE_SIZE / 2) + (TILE_SIZE / 2));
+                    ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 6) + offsetY, TILE_SIZE - (TILE_SIZE / 8) - (TILE_SIZE / 8), (TILE_SIZE / 8));
+                    ctx.strokeStyle = trunkColor;
+                    ctx.lineWidth = Math.floor(TILE_SIZE / 10);
+                    ctx.beginPath();
+                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY);
+                    ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 6) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 5) + offsetY);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY);
+                    ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE - (TILE_SIZE / 6) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 5) + offsetY);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY);
+                    ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 6) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 18) + offsetY);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY);
+                    ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE - (TILE_SIZE / 6) - (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 18) + offsetY);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 8) + offsetY);
+                    ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 5) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + (TILE_SIZE / 12) + offsetY);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 8) + offsetY);
+                    ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE - (TILE_SIZE / 5) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + (TILE_SIZE / 12) + offsetY);
+                    ctx.stroke();
                 }
                 break;
             case "conifer":
@@ -711,7 +743,7 @@ function update(){
 
 // User input
 function fastForwardTime(event){
-    if(event.key === "Enter"){
+    if(event.key === "Enter" && isPaused){
         update();
     }
 }
