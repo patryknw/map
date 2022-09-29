@@ -23,18 +23,13 @@ var year = 1619;
 var weekday_number = 7;
 var day_name = days[6];
 var month_name = months[3];
+var isGregorian = true;
 
 var season = seasons[0];
 var springStart = 20;
 var summerStart = 21;
 var autumnStart = 23;
 var winterStart = 21;
-
-// Creating empty map array
-var mapTiles = Array.from({length: HEIGHT / TILE_SIZE});
-for(let i = 0; i < mapTiles.length; i++){
-    mapTiles[i] = Array.from({length: WIDTH / TILE_SIZE});
-}
 
 function getRandomInt(min, max){
     min = Math.ceil(min);
@@ -44,6 +39,12 @@ function getRandomInt(min, max){
 
 function offsetNumber(color, offset){
     return getRandomInt(color - offset, color + offset);
+}
+
+// Creating empty map array
+var mapTiles = Array.from({length: HEIGHT / TILE_SIZE});
+for(let i = 0; i < mapTiles.length; i++){
+    mapTiles[i] = Array.from({length: WIDTH / TILE_SIZE});
 }
 
 class Tree{
@@ -69,7 +70,7 @@ class Tree{
                 switch(this.type){
                     case "deciduous":
                         this.hasLeaves = true;
-                        this.leavesColor = `rgb(${offsetNumber(46, 3)}, ${offsetNumber(100, 13)}, 31)`;
+                        this.leavesColor = `rgb(${offsetNumber(42, 6)}, ${offsetNumber(109, 6)}, 33)`;
                         break;
                     case "conifer":
                         this.leavesColor = `rgb(${offsetNumber(16, 5)}, 49, ${offsetNumber(20, 6)})`;
@@ -80,7 +81,7 @@ class Tree{
                 switch(this.type){
                     case "deciduous":
                         this.hasLeaves = true;
-                        this.leavesColor = `rgb(${offsetNumber(54, 3)}, ${offsetNumber(104, 13)}, 31)`;
+                        this.leavesColor = `rgb(${offsetNumber(54, 3)}, ${offsetNumber(104, 12)}, 31)`;
                         break;
                     case "conifer":
                         this.leavesColor = `rgb(${offsetNumber(19, 8)}, 53, ${offsetNumber(18, 5)})`;
@@ -224,10 +225,10 @@ class Tile{
                         this.color = `rgb(52, ${offsetNumber(140, 3)}, 49)`;
                         break;
                     case "forest_edge":
-                        this.color = `rgb(46, ${offsetNumber(131, 4)}, 43)`;
+                        this.color = `rgb(47, ${offsetNumber(131, 4)}, 43)`;
                         break;
                     case "forest":
-                        this.color = `rgb(38, ${offsetNumber(117, 5)}, 36)`;
+                        this.color = `rgb(42, ${offsetNumber(124, 5)}, 39)`;
                         break;
                     case "water":
                         this.color = "#4495cf";
@@ -243,7 +244,7 @@ class Tile{
                         this.color = `rgb(61, ${offsetNumber(131, 4)}, 43)`;
                         break;
                     case "forest":
-                        this.color = `rgb(53, ${offsetNumber(117, 5)}, 36)`;
+                        this.color = `rgb(56, ${offsetNumber(123, 5)}, 38)`;
                         break;
                     case "water":
                         this.color = "#4495cf";
@@ -598,7 +599,7 @@ function generateStandaloneHouse(){
                         }
                         break;
                     case "forest":
-                        if(getRandomInt(0, 750) == 0){
+                        if(getRandomInt(0, 1000) == 0){
                             mapTiles[j][i].feature = "house";
                             mapTiles[j][i].house = new House(null, null, null, null);
                             mapTiles[j][i].house.assignType();
@@ -675,15 +676,29 @@ function nextDay(){
             month++;
         }
     } else if(month == 2){
-        if((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0)){
-            if(day == 29 + 1){
-                day = 1;
-                month++;
+        if(isGregorian){
+            if((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0)){
+                if(day == 29 + 1){
+                    day = 1;
+                    month++;
+                }
+            } else{
+                if(day == 28 + 1){
+                    day = 1;
+                    month++;
+                }
             }
         } else{
-            if(day == 28 + 1){
-                day = 1;
-                month++;
+            if(year % 4 == 0){
+                if(day == 29 + 1){
+                    day = 1;
+                    month++;
+                }
+            } else{
+                if(day == 28 + 1){
+                    day = 1;
+                    month++;
+                }
             }
         }
     }
@@ -701,6 +716,11 @@ function nextDay(){
         case 12:
             if(day == winterStart) season = seasons[3];
             break;
+    }
+
+    if(year == 1582 && month == 10 && day == (4 + 1)){
+        day = 15;
+        isGregorian = true;
     }
     month_name = months[month - 1];
 }
