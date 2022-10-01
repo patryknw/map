@@ -20,16 +20,18 @@ var seasons = ["Spring", "Summer", "Autumn", "Winter"];
 var day = 7;
 var month = 4;
 var year = 1619;
-var weekday_number = 7;
-var day_name = days[6];
-var month_name = months[3];
-var isGregorian = true;
+var weekdayNumber = 7;
+var season = "spring";
 
-var season = seasons[0];
+var dayName = days[6];
+var monthName = months[3];
+var seasonName = seasons[0];
+
 var springStart = 20;
 var summerStart = 21;
 var autumnStart = 23;
 var winterStart = 21;
+var isGregorian = true;
 
 function getRandomInt(min, max){
     min = Math.ceil(min);
@@ -66,7 +68,7 @@ class Tree{
     }
     assignLeavesColor(){
         switch(season){
-            case seasons[0]:  // Spring
+            case "spring":
                 switch(this.type){
                     case "deciduous":
                         this.hasLeaves = true;
@@ -77,7 +79,7 @@ class Tree{
                         break;
                 }
                 break;
-            case seasons[1]:  // Summer
+            case "summer":
                 switch(this.type){
                     case "deciduous":
                         this.hasLeaves = true;
@@ -88,7 +90,7 @@ class Tree{
                         break;
                 }
                 break;
-            case seasons[2]:  // Autumn
+            case "autumn":
                 switch(this.type){
                     case "deciduous":
                         this.hasLeaves = true;
@@ -115,7 +117,7 @@ class Tree{
                         break;
                 }
                 break;
-            case seasons[3]:  // Winter
+            case "winter":
                 switch(this.type){
                     case "deciduous":
                         this.hasLeaves = false;
@@ -219,7 +221,7 @@ class Tile{
     }
     assignColor(){
         switch(season){
-            case seasons[0]:  // Spring
+            case "spring":
                 switch(this.type){
                     case "plains":
                         this.color = `rgb(52, ${offsetNumber(140, 3)}, 49)`;
@@ -235,7 +237,7 @@ class Tile{
                         break;
                 }
                 break;
-            case seasons[1]:  // Summer
+            case "summer":
                 switch(this.type){
                     case "plains":
                         this.color = `rgb(67, ${offsetNumber(140, 3)}, 49)`;
@@ -251,7 +253,7 @@ class Tile{
                         break;
                 }
                 break;
-            case seasons[2]:  // Autumn
+            case "autumn":
                 switch(this.type){
                     case "plains":
                         this.color = `rgb(104, ${offsetNumber(131, 3)}, 38)`;
@@ -267,7 +269,7 @@ class Tile{
                         break;
                 }
                 break;
-            case seasons[3]:  // Winter
+            case "winter":
                 switch(this.type){
                     case "plains":
                         var snowColor = offsetNumber(242, 2);
@@ -656,9 +658,9 @@ function drawHouses(){
 
 function nextDay(){
     day++;
-    weekday_number++;
-    if(weekday_number == 8){ weekday_number = 1; }
-    day_name = days[weekday_number - 1];
+    weekdayNumber++;
+    if(weekdayNumber == 8){ weekdayNumber = 1; }
+    dayName = days[weekdayNumber - 1];
 
     if(day == 31 + 1){
         if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){
@@ -705,16 +707,28 @@ function nextDay(){
 
     switch(month){
         case 3:
-            if(day == springStart) season = seasons[0];
+            if(day == springStart){
+                season = "spring";
+                seasonName = seasons[0];
+            }
             break;
         case 6:
-            if(day == summerStart) season = seasons[1];
+            if(day == summerStart){
+                season = "summer";
+                seasonName = seasons[1];
+            }
             break;
         case 9:
-            if(day == autumnStart) season = seasons[2];
+            if(day == autumnStart){
+                season = "autumn";
+                seasonName = seasons[2];
+            }
             break;
         case 12:
-            if(day == winterStart) season = seasons[3];
+            if(day == winterStart){
+                season = "winter";
+                seasonName = seasons[3];
+            }
             break;
     }
 
@@ -722,19 +736,19 @@ function nextDay(){
         day = 15;
         isGregorian = true;
     }
-    month_name = months[month - 1];
+    monthName = months[month - 1];
 }
 
 function displayDate(inConsole, onScreen){
-    if(inConsole) console.log(`${day}.${month}.${year}\n${season}\n${day_name}, ${day} ${month_name} ${year}`);
+    if(inConsole) console.log(`${day}.${month}.${year}\n${seasonName}\n${dayName}, ${day} ${monthName} ${year}`);
     if(onScreen){
         ctx.fillStyle = "#000000";
         ctx.font = `bold ${Math.floor(WIDTH / 66)}px Pristina`;
         ctx.textAlign = "center";
-        ctx.fillText(`${season}`, WIDTH / 2, HEIGHT / 20);
-        ctx.fillText(`${day_name}, ${day} ${month_name} ${year}`, WIDTH / 2, HEIGHT / 11);
-        //ctx.fillText(`${day} ${month_name} ${year}`, WIDTH / 2, HEIGHT / 11);
-        //ctx.fillText(`${day_name}`, WIDTH / 2, HEIGHT / 8);
+        ctx.fillText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
+        ctx.fillText(`${dayName}, ${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);
+        //ctx.fillText(`${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);
+        //ctx.fillText(`${dayName}`, WIDTH / 2, HEIGHT / 8);
     }
 }
 
@@ -772,11 +786,11 @@ document.addEventListener("keydown", fastForwardTime);
 function changeTimeSped(event){
     if(event.deltaY > 0 && updateTickSpeed < 2000){
         clearInterval(updateInterval);
-        updateTickSpeed += 50;
+        updateTickSpeed += 100;
         updateInterval = setInterval(update, updateTickSpeed);
-    } else if(event.deltaY < 0 && updateTickSpeed > 50){
+    } else if(event.deltaY < 0 && updateTickSpeed > 100){
         clearInterval(updateInterval);
-        updateTickSpeed += -50;
+        updateTickSpeed -= 100;
         updateInterval = setInterval(update, updateTickSpeed);
     }
 }
