@@ -142,11 +142,12 @@ class Tree{
 }
 
 class House{
-    constructor(type, houseColor, roofColor, variant){
+    constructor(type, houseColor, roofColor, variant, inhabitants){
         this.type = type;
         this.houseColor = houseColor;
         this.roofColor = roofColor;
         this.variant = variant;
+        this.inhabitants = inhabitants;
     }
     assignType(){
         this.type = "wooden";
@@ -168,15 +169,35 @@ class House{
                 break;
         }
     }
+    setInhabitants(){
+        this.inhabitants = getRandomInt(1, 7);
+    }
 }
 
 class Village{
-    constructor(prosperity, numberOfHouses, population, hasChurch, religion){
+    constructor(name, prosperity, numberOfHouses, population, hasChurch, religion){
+        this.name = name;
         this.prosperity = prosperity;
         this.numberOfHouses = numberOfHouses;
         this.population = population;
         this.hasChurch = hasChurch;
         this.religion = religion;
+    }
+    setName(){
+        switch(getRandomInt(0, 3)){
+            case 0:
+                this.name = "Lindenvale";
+                break;
+            case 1:
+                this.name = "Upper Heather";
+                break;
+            case 2:
+                this.name = "Applebough";
+                break;
+            case 3:
+                this.name = "Claywich";
+                break;
+        }
     }
     setProsperity(){
         this.prosperity = getRandomInt(1, 10);
@@ -607,28 +628,31 @@ function generateStandaloneHouse(){
                     case "plains":
                         if(getRandomInt(0, 5000) == 0){
                             mapTiles[j][i].feature = "house";
-                            mapTiles[j][i].house = new House(null, null, null, null);
+                            mapTiles[j][i].house = new House(null, null, null, null, null);
                             mapTiles[j][i].house.assignType();
                             mapTiles[j][i].house.assignColor();
                             mapTiles[j][i].house.assignVariant();
+                            mapTiles[j][i].house.setInhabitants();
                         }
                         break;
                     case "forest_edge":
                         if(getRandomInt(0, 2500) == 0){
                             mapTiles[j][i].feature = "house";
-                            mapTiles[j][i].house = new House(null, null, null, null);
+                            mapTiles[j][i].house = new House(null, null, null, null, null);
                             mapTiles[j][i].house.assignType();
                             mapTiles[j][i].house.assignColor();
                             mapTiles[j][i].house.assignVariant();
+                            mapTiles[j][i].house.setInhabitants();
                         }
                         break;
                     case "forest":
                         if(getRandomInt(0, 1000) == 0){
                             mapTiles[j][i].feature = "house";
-                            mapTiles[j][i].house = new House(null, null, null, null);
+                            mapTiles[j][i].house = new House(null, null, null, null, null);
                             mapTiles[j][i].house.assignType();
                             mapTiles[j][i].house.assignColor();
                             mapTiles[j][i].house.assignVariant();
+                            mapTiles[j][i].house.setInhabitants();
                         }
                         break;
                     case "water":
@@ -648,12 +672,16 @@ function generateVillage(){
     let villageX = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), WIDTH - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
     let villageY = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), HEIGHT - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
 
-    mapTiles[villageY][villageX].feature = new Village(null, null, null, null, null);
+    mapTiles[villageY][villageX].feature = new Village(null, null, null, null, null, null);
+    mapTiles[villageY][villageX].feature.setName();
     mapTiles[villageY][villageX].feature.setProsperity();
     mapTiles[villageY][villageX].feature.setNumberOfHouses();
     mapTiles[villageY][villageX].feature.setReligion();
     mapTiles[villageY][villageX].feature.setChurch();
-    //mapTiles[villageY][villageX].drawPerlinDebug();
+    mapTiles[villageY][villageX].drawPerlinDebug();
+
+    let houseCount = 0;
+    let inhabitantsCount = 0;
 
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
@@ -661,18 +689,23 @@ function generateVillage(){
                 mapTiles[j][i].drawPerlinDebug();
             }*/
             if(j > villageY - VILLAGE_RADIUS && j < villageY + VILLAGE_RADIUS && i > villageX - VILLAGE_RADIUS && i < villageX + VILLAGE_RADIUS){
-                if(getRandomInt(0, 4) == 0){
+                if(getRandomInt(0, 4) == 0 && houseCount < mapTiles[villageY][villageX].feature.numberOfHouses){
                     if(mapTiles[j][i].type != "water" && mapTiles[j][i].feature == null){
                         mapTiles[j][i].feature = "house";
-                        mapTiles[j][i].house = new House(null, null, null, null);
+                        mapTiles[j][i].house = new House(null, null, null, null, null);
                         mapTiles[j][i].house.assignType();
                         mapTiles[j][i].house.assignColor();
                         mapTiles[j][i].house.assignVariant();
+                        mapTiles[j][i].house.setInhabitants();
+                        inhabitantsCount += mapTiles[j][i].house.inhabitants;
+                        houseCount++;
                     }
                 }
             }
         }
     }
+    mapTiles[villageY][villageX].feature.population = inhabitantsCount;
+    mapTiles[villageY][villageX].feature.numberOfHouses = houseCount;
 }
 
 function drawHouses(){
