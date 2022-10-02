@@ -170,6 +170,28 @@ class House{
     }
 }
 
+class Village{
+    constructor(prosperity, numberOfHouses, population, hasChurch, religion){
+        this.prosperity = prosperity;
+        this.numberOfHouses = numberOfHouses;
+        this.population = population;
+        this.hasChurch = hasChurch;
+        this.religion = religion;
+    }
+    setProsperity(){
+        this.prosperity = getRandomInt(1, 10);
+    }
+    setNumberOfHouses(){
+        this.numberOfHouses = getRandomInt(4, 20);
+    }
+    setChurch(){
+        (getRandomInt(0, 1)) ? this.hasChurch = true : this.hasChurch = false;
+    }
+    setReligion(){
+        getRandomInt(0, 1) ? this.religion = "catholicism" : this.religion = "orthodoxy";
+    }
+}
+
 class Tile{
     constructor(x, y, type, height, forestDensity, color, feature, tree, house){
         this.x = x;
@@ -623,15 +645,22 @@ function generateStandaloneHouse(){
 function generateVillage(){
     const VILLAGE_RADIUS = getRandomInt(3, 5);
 
-    let village_x = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), WIDTH - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
-    let village_y = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), HEIGHT - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
+    let villageX = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), WIDTH - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
+    let villageY = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), HEIGHT - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
+
+    mapTiles[villageY][villageX].feature = new Village(null, null, null, null, null);
+    mapTiles[villageY][villageX].feature.setProsperity();
+    mapTiles[villageY][villageX].feature.setNumberOfHouses();
+    mapTiles[villageY][villageX].feature.setReligion();
+    mapTiles[villageY][villageX].feature.setChurch();
+    //mapTiles[villageY][villageX].drawPerlinDebug();
 
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
-            /*if(j == village_y && i == village_x){  // Center of village
+            /*if(j == villageY && i == villageX){  // Center of village
                 mapTiles[j][i].drawPerlinDebug();
             }*/
-            if(j > village_y - VILLAGE_RADIUS && j < village_y + VILLAGE_RADIUS && i > village_x - VILLAGE_RADIUS && i < village_x + VILLAGE_RADIUS){
+            if(j > villageY - VILLAGE_RADIUS && j < villageY + VILLAGE_RADIUS && i > villageX - VILLAGE_RADIUS && i < villageX + VILLAGE_RADIUS){
                 if(getRandomInt(0, 4) == 0){
                     if(mapTiles[j][i].type != "water" && mapTiles[j][i].feature == null){
                         mapTiles[j][i].feature = "house";
@@ -659,7 +688,7 @@ function drawHouses(){
 function nextDay(){
     day++;
     weekdayNumber++;
-    if(weekdayNumber == 8){ weekdayNumber = 1; }
+    if(weekdayNumber == 8) weekdayNumber = 1;
     dayName = days[weekdayNumber - 1];
 
     if(day == 31 + 1){
