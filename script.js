@@ -17,21 +17,21 @@ const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const seasons = ["Spring", "Summer", "Autumn", "Winter"];
 
-let day = 7;
-let month = 4;
-let year = 1619;
-let weekdayNumber = 7;
-let season = "spring";
+let day = 1;
+let month = 7;
+let year = 1569;
+let weekdayNumber = 5;
+let season = "summer";
 
-let dayName = days[6];
-let monthName = months[3];
-let seasonName = seasons[0];
+let dayName = days[4];
+let monthName = months[6];
+let seasonName = seasons[1];
 
 let springStart = 20;
 let summerStart = 21;
 let autumnStart = 23;
 let winterStart = 21;
-let isGregorian = true;
+let isGregorian = false;
 
 function getRandomInt(min, max){
     min = Math.ceil(min);
@@ -67,9 +67,10 @@ function offsetNumber(color, offset){
     console.log(checkedTiles);
 }*/
 
-var randomTilesData = {checkedTiles: [], index: 0};
+let randomTilesData = {checkedTiles: [], index: 0};
+let randomTilesLeavesData = {checkedTiles: [], index: 0};
 
-function getRandomTile(xMin, xMax, yMin, yMax, checkedTiles, index){
+function getRandomTile(xMin, xMax, yMin, yMax, checkedTiles, index, updateLeaves){
     do{
         var randomX = getRandomInt(xMin, xMax);
         var randomY = getRandomInt(yMin, yMax);
@@ -79,27 +80,43 @@ function getRandomTile(xMin, xMax, yMin, yMax, checkedTiles, index){
             if(j == randomY && i == randomX){
                 checkedTiles[index] = mapTiles[j][i];
                 index++;
-                randomTilesData.checkedTiles = checkedTiles;
-                randomTilesData.index = index;
+                if(!updateLeaves){
+                    randomTilesData.checkedTiles = checkedTiles;
+                    randomTilesData.index = index;
+                } else{
+                    randomTilesLeavesData.checkedTiles = checkedTiles;
+                    randomTilesLeavesData.index = index;
+                }
                 return mapTiles[j][i];
             }
         }
     }
 }
 
-function snowfall(amount){
+function assignColorToRandomTiles(amount, season){
     for(let i = 0; i < amount; i++){
         if(randomTilesData.checkedTiles.length < ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
-            getRandomTile(0, (WIDTH / TILE_SIZE) - 1, 0, (HEIGHT / TILE_SIZE) - 1, randomTilesData.checkedTiles, randomTilesData.index).assignTileColor("winter");
+            let selectedTile = getRandomTile(0, (WIDTH / TILE_SIZE) - 1, 0, (HEIGHT / TILE_SIZE) - 1, randomTilesData.checkedTiles, randomTilesData.index, false);
+            if(selectedTile.type != "water") selectedTile.assignTileColor(season);
         }
     }
 }
 
-function leaffall(amount){
+function assignColorToRandomTrees(amount, season){
     for(let i = 0; i < amount; i++){
-        if(randomTilesData.checkedTiles.length < ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
-            var selectedTile = getRandomTile(0, (WIDTH / TILE_SIZE) - 1, 0, (HEIGHT / TILE_SIZE) - 1, randomTilesData.checkedTiles, randomTilesData.index);
-            if(selectedTile.feature == "tree") selectedTile.tree.assignLeavesColor("winter");
+        if(randomTilesLeavesData.checkedTiles.length < ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
+            let selectedTile = getRandomTile(0, (WIDTH / TILE_SIZE) - 1, 0, (HEIGHT / TILE_SIZE) - 1, randomTilesLeavesData.checkedTiles, randomTilesLeavesData.index, true);
+            if(selectedTile.feature == "tree") selectedTile.tree.assignLeavesColor(season);
+        }
+    }
+}
+
+function assignColorToWater(season){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            if(mapTiles[j][i].type == "water"){
+                mapTiles[j][i].assignTileColor(season);
+            }
         }
     }
 }
@@ -603,9 +620,19 @@ function assignSeasonColor(){
 function updateSeasonColor(){
     switch(month){
         case 3:
-            if(day == springStart){
-                assignSeasonColor();
+            if(day == 14) randomTilesLeavesData = {checkedTiles: [], index: 0};
+            if(day > 14) assignColorToRandomTrees(140, "spring");
+            if(day == 17){
+                assignColorToWater("spring");
             }
+            break;
+        case 4:
+            if(day < 14) assignColorToRandomTrees(140, "spring");
+            if(day == 15) randomTilesData = {checkedTiles: [], index: 0};
+            if(day > 16) assignColorToRandomTiles(180, "spring");
+            break;
+        case 5:
+            if(day < 26) assignColorToRandomTiles(180, "spring");
             break;
         case 6:
             if(day == summerStart){
@@ -618,16 +645,17 @@ function updateSeasonColor(){
             }
             break;
         case 10:
-            if(day == 14) randomTilesData = {checkedTiles: [], index: 0};
-            if(day > 14) leaffall(140);
+            if(day == 14) randomTilesLeavesData = {checkedTiles: [], index: 0};
+            if(day > 14) assignColorToRandomTrees(140, "winter");
             break;
         case 11:
-            if(day < 14) leaffall(140);  // make sure they don't overlap
+            if(day < 14) assignColorToRandomTrees(140, "winter");
             if(day == 15) randomTilesData = {checkedTiles: [], index: 0};
-            if(day > 16) snowfall(180);
+            if(day > 16) assignColorToRandomTiles(180, "winter");
             break;
         case 12:
-            if(day < 26) snowfall(180);
+            if(day == 12) assignColorToWater("winter");
+            if(day < 26) assignColorToRandomTiles(180, "winter");
             break;
     }
 }
