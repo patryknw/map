@@ -1,5 +1,5 @@
 # About
-A 2D procedural landscape generator with basic simulation. Made as a personal hobby project. Time period and place portrayed here is seventeenth-century Polish-Lithuanian Commonwealth.
+A 2D procedural landscape generator with basic simulation. Made as a personal hobby project. Time period and place portrayed here is sixteenth-century Polish-Lithuanian Commonwealth.
 
 ## Controls
 You can control the speed of time. By default it is one day per second, once you unpause.
