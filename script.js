@@ -87,16 +87,19 @@ function getRandomTile(xMin, xMax, yMin, yMax, checkedTiles, index){
     }
 }
 
-function snowfall(){
-    if((month == 4 && day >= 10)){
-        for(let i = 0; i < 359; i++){
-            if(randomTilesData.checkedTiles.length < ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
-                getRandomTile(0, (WIDTH / TILE_SIZE) - 1, 0, (HEIGHT / TILE_SIZE) - 1, randomTilesData.checkedTiles, randomTilesData.index).drawDebug("#ff0000");
-            } else if(randomTilesData.checkedTiles.length == ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
-                randomTilesData = {checkedTiles: [], index: 0};
-            } else{
-                return;
-            }
+function snowfall(amount){
+    for(let i = 0; i < amount; i++){
+        if(randomTilesData.checkedTiles.length < ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
+            getRandomTile(0, (WIDTH / TILE_SIZE) - 1, 0, (HEIGHT / TILE_SIZE) - 1, randomTilesData.checkedTiles, randomTilesData.index).assignTileColor("winter");
+        }
+    }
+}
+
+function leaffall(amount){
+    for(let i = 0; i < amount; i++){
+        if(randomTilesData.checkedTiles.length < ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
+            var selectedTile = getRandomTile(0, (WIDTH / TILE_SIZE) - 1, 0, (HEIGHT / TILE_SIZE) - 1, randomTilesData.checkedTiles, randomTilesData.index);
+            if(selectedTile.feature == "tree") selectedTile.tree.assignLeavesColor("winter");
         }
     }
 }
@@ -124,7 +127,7 @@ class Tree{
                 break;
         }
     }
-    assignLeavesColor(){
+    assignLeavesColor(season){
         switch(season){
             case "spring":
                 switch(this.type){
@@ -324,7 +327,7 @@ class Tile{
                 this.type = null;
         }
     }
-    assignColor(){
+    assignTileColor(season){
         switch(season){
             case "spring":
                 switch(this.type){
@@ -394,7 +397,7 @@ class Tile{
                 }
                 break;
             default:
-                console.log("No season found @ assignColor()!");
+                console.log("No season found @ assignTileColor(season)!");
                 break;
         }
     }
@@ -574,7 +577,7 @@ function createForestTemplate(){
         for(let i = 0; i < mapTiles[j].length; i++){
             mapTiles[j][i].setForestDensity(j, i);
             mapTiles[j][i].setTypeForest();
-            mapTiles[j][i].assignColor();
+            mapTiles[j][i].assignTileColor(season);
         }
     }
 }
@@ -591,8 +594,8 @@ function drawFinalTile(){
 function assignSeasonColor(){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
-            mapTiles[j][i].assignColor();
-            if(mapTiles[j][i].feature == "tree") mapTiles[j][i].tree.assignLeavesColor();
+            mapTiles[j][i].assignTileColor(season);
+            if(mapTiles[j][i].feature == "tree") mapTiles[j][i].tree.assignLeavesColor(season);
         }
     }
 }
@@ -614,10 +617,17 @@ function updateSeasonColor(){
                 assignSeasonColor();
             }
             break;
+        case 10:
+            if(day == 14) randomTilesData = {checkedTiles: [], index: 0};
+            if(day > 14) leaffall(140);
+            break;
+        case 11:
+            if(day < 14) leaffall(140);  // make sure they don't overlap
+            if(day == 15) randomTilesData = {checkedTiles: [], index: 0};
+            if(day > 16) snowfall(180);
+            break;
         case 12:
-            if(day == winterStart){
-                assignSeasonColor();
-            }
+            if(day < 26) snowfall(180);
             break;
     }
 }
@@ -632,7 +642,7 @@ function generateForest(){
                             mapTiles[j][i].feature = "tree";
                             mapTiles[j][i].tree = new Tree(null, null, null);
                             mapTiles[j][i].tree.assignType();
-                            mapTiles[j][i].tree.assignLeavesColor();
+                            mapTiles[j][i].tree.assignLeavesColor(season);
                             mapTiles[j][i].tree.assignTrunkColor();
                         }
                         break;
@@ -641,7 +651,7 @@ function generateForest(){
                             mapTiles[j][i].feature = "tree";
                             mapTiles[j][i].tree = new Tree(null, null, null);
                             mapTiles[j][i].tree.assignType();
-                            mapTiles[j][i].tree.assignLeavesColor();
+                            mapTiles[j][i].tree.assignLeavesColor(season);
                             mapTiles[j][i].tree.assignTrunkColor();
                         }
                         break;
@@ -650,7 +660,7 @@ function generateForest(){
                             mapTiles[j][i].feature = "tree";
                             mapTiles[j][i].tree = new Tree(null, null, null);
                             mapTiles[j][i].tree.assignType();
-                            mapTiles[j][i].tree.assignLeavesColor();
+                            mapTiles[j][i].tree.assignLeavesColor(season);
                             mapTiles[j][i].tree.assignTrunkColor();
                         }
                         break;
@@ -891,11 +901,10 @@ init();
 
 function update(){
     nextDay();
-    //updateSeasonColor();
-    //drawFinalTile();
-    //drawHouses();
-    //drawForest();
-    snowfall();
+    updateSeasonColor();
+    drawFinalTile();
+    drawHouses();
+    drawForest();
     displayDate(true, true);
     console.log(updateTickSpeed);
 }
