@@ -6,32 +6,32 @@
  * forest generation fully based on perlin
  */
 
-var canvas = document.getElementById("canvas");
-var ctx = canvas.getContext("2d");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 const TILE_SIZE = 20;
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
 
-var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-var seasons = ["Spring", "Summer", "Autumn", "Winter"];
+const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const seasons = ["Spring", "Summer", "Autumn", "Winter"];
 
-var day = 7;
-var month = 4;
-var year = 1619;
-var weekdayNumber = 7;
-var season = "spring";
+let day = 7;
+let month = 4;
+let year = 1619;
+let weekdayNumber = 7;
+let season = "spring";
 
-var dayName = days[6];
-var monthName = months[3];
-var seasonName = seasons[0];
+let dayName = days[6];
+let monthName = months[3];
+let seasonName = seasons[0];
 
-var springStart = 20;
-var summerStart = 21;
-var autumnStart = 23;
-var winterStart = 21;
-var isGregorian = true;
+let springStart = 20;
+let summerStart = 21;
+let autumnStart = 23;
+let winterStart = 21;
+let isGregorian = true;
 
 function getRandomInt(min, max){
     min = Math.ceil(min);
@@ -41,6 +41,64 @@ function getRandomInt(min, max){
 
 function offsetNumber(color, offset){
     return getRandomInt(color - offset, color + offset);
+}
+
+/*function getRandomTiles(numberOfTiles, numberOfPasses){
+    let checkedTiles = [];
+    let index = 0;
+
+    for(let l = 0; l < numberOfPasses; l++){
+        for(let k = 0; k < numberOfTiles; k++){
+            do{
+                var randomX = getRandomInt(0, (WIDTH / TILE_SIZE) - 1);
+                var randomY = getRandomInt(0, (HEIGHT / TILE_SIZE) - 1);
+            } while(checkedTiles.includes(mapTiles[randomY][randomX]));
+            for(let j = 0; j < mapTiles.length; j++){
+                for(let i = 0; i < mapTiles[j].length; i++){
+                    if(j == randomY && i == randomX){
+                        checkedTiles[index] = mapTiles[j][i];
+                        index++;
+                        mapTiles[j][i].drawDebug("#ff0000");
+                    }
+                }
+            }
+        }
+    }
+    console.log(checkedTiles);
+}*/
+
+var randomTilesData = {checkedTiles: [], index: 0};
+
+function getRandomTile(xMin, xMax, yMin, yMax, checkedTiles, index){
+    do{
+        var randomX = getRandomInt(xMin, xMax);
+        var randomY = getRandomInt(yMin, yMax);
+    } while(checkedTiles.includes(mapTiles[randomY][randomX]));
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            if(j == randomY && i == randomX){
+                checkedTiles[index] = mapTiles[j][i];
+                index++;
+                randomTilesData.checkedTiles = checkedTiles;
+                randomTilesData.index = index;
+                return mapTiles[j][i];
+            }
+        }
+    }
+}
+
+function snowfall(){
+    if((month == 4 && day >= 10)){
+        for(let i = 0; i < 359; i++){
+            if(randomTilesData.checkedTiles.length < ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
+                getRandomTile(0, (WIDTH / TILE_SIZE) - 1, 0, (HEIGHT / TILE_SIZE) - 1, randomTilesData.checkedTiles, randomTilesData.index).drawDebug("#ff0000");
+            } else if(randomTilesData.checkedTiles.length == ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
+                randomTilesData = {checkedTiles: [], index: 0};
+            } else{
+                return;
+            }
+        }
+    }
 }
 
 // Creating empty map array
@@ -206,7 +264,7 @@ class Village{
         this.numberOfHouses = getRandomInt(4, 20);
     }
     setChurch(){
-        (getRandomInt(0, 1)) ? this.hasChurch = true : this.hasChurch = false;
+        getRandomInt(0, 1) ? this.hasChurch = true : this.hasChurch = false;
     }
     setReligion(){
         getRandomInt(0, 1) ? this.religion = "catholicism" : this.religion = "orthodoxy";
@@ -230,6 +288,10 @@ class Tile{
     }
     setForestDensity(x, y){
         this.forestDensity = Math.floor(Math.abs(noise.perlin2(x / 50, y / 50)) * 256)  // 50 being scale for perlin noise
+    }
+    drawDebug(color){
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x * TILE_SIZE, this.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
     drawPerlinDebug(){
         ctx.fillStyle = `rgb(${this.height}, ${this.height}, ${this.height})`;
@@ -678,7 +740,7 @@ function generateVillage(){
     mapTiles[villageY][villageX].feature.setNumberOfHouses();
     mapTiles[villageY][villageX].feature.setReligion();
     mapTiles[villageY][villageX].feature.setChurch();
-    mapTiles[villageY][villageX].drawPerlinDebug();
+    mapTiles[villageY][villageX].drawDebug("#00ffff");
 
     let houseCount = 0;
     let inhabitantsCount = 0;
@@ -686,7 +748,7 @@ function generateVillage(){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
             /*if(j == villageY && i == villageX){  // Center of village
-                mapTiles[j][i].drawPerlinDebug();
+                mapTiles[j][i].drawDebug("#00ffff");
             }*/
             if(j > villageY - VILLAGE_RADIUS && j < villageY + VILLAGE_RADIUS && i > villageX - VILLAGE_RADIUS && i < villageX + VILLAGE_RADIUS){
                 if(getRandomInt(0, 4) == 0 && houseCount < mapTiles[villageY][villageX].feature.numberOfHouses){
@@ -829,10 +891,11 @@ init();
 
 function update(){
     nextDay();
-    updateSeasonColor();
-    drawFinalTile();
-    drawHouses();
-    drawForest();
+    //updateSeasonColor();
+    //drawFinalTile();
+    //drawHouses();
+    //drawForest();
+    snowfall();
     displayDate(true, true);
     console.log(updateTickSpeed);
 }
@@ -856,7 +919,7 @@ function changeTimeSped(event){
         updateInterval = setInterval(update, updateTickSpeed);
     }
 }
-var updateTickSpeed = 1000;
+let updateTickSpeed = 1000;
 document.addEventListener("wheel", changeTimeSped);
 
 function toggleTime(event){
@@ -871,5 +934,5 @@ function toggleTime(event){
         }
     }
 }
-var isPaused = true;
+let isPaused = true;
 document.addEventListener("keyup", toggleTime);
