@@ -15,23 +15,32 @@ const HEIGHT = canvas.height;
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const seasons = ["Spring", "Summer", "Autumn", "Winter"];
+const seasons = {spring: "Spring", summer: "Summer", autumn: "Autumn", winter: "Winter"};
 
-let day = 1;
-let month = 7;
-let year = 1569;
-let weekdayNumber = 5;
-let season = "summer";
+const startDate = {
+    day: 1,
+    month: 7,
+    year: 1569,
+    weekdayNumber: 5,
+    season: "summer",
+    isGregorian: false
+};
 
-let dayName = days[4];
-let monthName = months[6];
-let seasonName = seasons[1];
+let day = startDate.day;
+let month = startDate.month;
+let year = startDate.year;
+let weekdayNumber = startDate.weekdayNumber;
+let season = startDate.season;
+let isGregorian = startDate.isGregorian;
+
+let dayName = days[weekdayNumber - 1];
+let monthName = months[month - 1];
+let seasonName = seasons[startDate.season];
 
 let springStart = 20;
 let summerStart = 21;
 let autumnStart = 23;
 let winterStart = 21;
-let isGregorian = false;
 
 function getRandomInt(min, max){
     min = Math.ceil(min);
@@ -43,62 +52,44 @@ function offsetNumber(color, offset){
     return getRandomInt(color - offset, color + offset);
 }
 
-/*function getRandomTiles(numberOfTiles, numberOfPasses){
-    let checkedTiles = [];
-    let index = 0;
-
-    for(let l = 0; l < numberOfPasses; l++){
-        for(let k = 0; k < numberOfTiles; k++){
-            do{
-                var randomX = getRandomInt(0, (WIDTH / TILE_SIZE) - 1);
-                var randomY = getRandomInt(0, (HEIGHT / TILE_SIZE) - 1);
-            } while(checkedTiles.includes(mapTiles[randomY][randomX]));
-            for(let j = 0; j < mapTiles.length; j++){
-                for(let i = 0; i < mapTiles[j].length; i++){
-                    if(j == randomY && i == randomX){
-                        checkedTiles[index] = mapTiles[j][i];
-                        index++;
-                        mapTiles[j][i].drawDebug("#ff0000");
-                    }
-                }
-            }
-        }
-    }
-    console.log(checkedTiles);
-}*/
-
 function getRGBArray(color){
     return color.substring(4, color.length - 1).replace(/ /g, "").split(",");
 }
 
-function shiftTileColor(){
-    for(let j = 0; j < mapTiles.length; j++){
-        for(let i = 0; i < mapTiles[j].length; i++){
-            if(mapTiles[j][i].type != "water"){
-                shiftChannel(mapTiles[j][i], 2, "r");
-                shiftChannel(mapTiles[j][i], 2, "g");
-                shiftChannel(mapTiles[j][i], 2, "b");
-            }
-        }
-    }
-}
-
-function shiftChannel(tile, amount, channel){
+function shiftChannel(tile, amount, channel, isTree){
     switch(channel){
         case "r":
-            var currentValue = parseInt(getRGBArray(tile.color)[0]);
-            var startingValue = parseInt(getRGBArray(tile.startingColor)[0]);
-            var targetValue = parseInt(getRGBArray(tile.targetColor)[0]);
+            if(!isTree){
+                var currentValue = parseInt(getRGBArray(tile.color)[0]);
+                var startingValue = parseInt(getRGBArray(tile.startingColor)[0]);
+                var targetValue = parseInt(getRGBArray(tile.targetColor)[0]);
+            } else{
+                var currentValue = parseInt(getRGBArray(tile.tree.leavesColor)[0]);
+                var startingValue = parseInt(getRGBArray(tile.tree.leavesStartingColor)[0]);
+                var targetValue = parseInt(getRGBArray(tile.tree.leavesTargetColor)[0]);
+            }
             break;
         case "g":
-            var currentValue = parseInt(getRGBArray(tile.color)[1]);
-            var startingValue = parseInt(getRGBArray(tile.startingColor)[1]);
-            var targetValue = parseInt(getRGBArray(tile.targetColor)[1]);
+            if(!isTree){
+                var currentValue = parseInt(getRGBArray(tile.color)[1]);
+                var startingValue = parseInt(getRGBArray(tile.startingColor)[1]);
+                var targetValue = parseInt(getRGBArray(tile.targetColor)[1]);
+            } else{
+                var currentValue = parseInt(getRGBArray(tile.tree.leavesColor)[1]);
+                var startingValue = parseInt(getRGBArray(tile.tree.leavesStartingColor)[1]);
+                var targetValue = parseInt(getRGBArray(tile.tree.leavesTargetColor)[1]);
+            }
             break;
         case "b":
-            var currentValue = parseInt(getRGBArray(tile.color)[2]);
-            var startingValue = parseInt(getRGBArray(tile.startingColor)[2]);
-            var targetValue = parseInt(getRGBArray(tile.targetColor)[2]);
+            if(!isTree){
+                var currentValue = parseInt(getRGBArray(tile.color)[2]);
+                var startingValue = parseInt(getRGBArray(tile.startingColor)[2]);
+                var targetValue = parseInt(getRGBArray(tile.targetColor)[2]);
+            } else{
+                var currentValue = parseInt(getRGBArray(tile.tree.leavesColor)[2]);
+                var startingValue = parseInt(getRGBArray(tile.tree.leavesStartingColor)[2]);
+                var targetValue = parseInt(getRGBArray(tile.tree.leavesTargetColor)[2]);
+            }
             break;
         default:
             console.log("No channel given @ shiftChannel(tile, amount, channel)");
@@ -120,23 +111,69 @@ function shiftChannel(tile, amount, channel){
 
     switch(channel){
         case "r":
-            tile.color = `rgb(${currentValue}, ${getRGBArray(tile.color)[1]}, ${getRGBArray(tile.color)[2]})`;
+            if(!isTree){
+                tile.color = `rgb(${currentValue}, ${getRGBArray(tile.color)[1]}, ${getRGBArray(tile.color)[2]})`;
+            } else{
+                tile.tree.leavesColor = `rgb(${currentValue}, ${getRGBArray(tile.tree.leavesColor)[1]}, ${getRGBArray(tile.tree.leavesColor)[2]})`;
+            }
             break;
         case "g":
-            tile.color = `rgb(${getRGBArray(tile.color)[0]}, ${currentValue}, ${getRGBArray(tile.color)[2]})`;
+            if(!isTree){
+                tile.color = `rgb(${getRGBArray(tile.color)[0]}, ${currentValue}, ${getRGBArray(tile.color)[2]})`;
+            } else{
+                tile.tree.leavesColor = `rgb(${getRGBArray(tile.tree.leavesColor)[0]}, ${currentValue}, ${getRGBArray(tile.tree.leavesColor)[2]})`;
+            }
             break;
         case "b":
-            tile.color = `rgb(${getRGBArray(tile.color)[0]}, ${getRGBArray(tile.color)[1]}, ${currentValue})`;
+            if(!isTree){
+                tile.color = `rgb(${getRGBArray(tile.color)[0]}, ${getRGBArray(tile.color)[1]}, ${currentValue})`;
+            } else{
+                tile.tree.leavesColor = `rgb(${getRGBArray(tile.tree.leavesColor)[0]}, ${getRGBArray(tile.tree.leavesColor)[1]}, ${currentValue})`;
+            }
             break;
         default:
             console.log("No channel given @ shiftChannel(tile, amount, channel)");
     }
 }
 
-function tempAssignTargetColor(season){
+function shiftTileColor(){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
-            mapTiles[j][i].assignTileTargetColor(season);
+            if(mapTiles[j][i].type != "water"){
+                shiftChannel(mapTiles[j][i], 2, "r", false);
+                shiftChannel(mapTiles[j][i], 2, "g", false);
+                shiftChannel(mapTiles[j][i], 2, "b", false);
+            }
+        }
+    }
+}
+
+function shiftLeavesColor(){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            if(mapTiles[j][i].feature == "tree"){
+                shiftChannel(mapTiles[j][i], 4, "r", true);
+                shiftChannel(mapTiles[j][i], 4, "g", true);
+                shiftChannel(mapTiles[j][i], 4, "b", true);
+            }
+        }
+    }
+}
+
+function shiftColor(){
+    shiftTileColor();
+    shiftLeavesColor();
+}
+
+function assignStartingAndTargetColors(season){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            mapTiles[j][i].assignStartingColor(season);
+            mapTiles[j][i].assignTargetColor(season);
+            if(mapTiles[j][i].feature == "tree"){
+                mapTiles[j][i].tree.assignLeavesStartingColor(season);
+                mapTiles[j][i].tree.assignLeavesTargetColor(season);
+            }
         }
     }
 }
@@ -171,7 +208,10 @@ function assignColorToRandomTiles(amount, season){
     for(let i = 0; i < amount; i++){
         if(randomTilesData.checkedTiles.length < ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
             let selectedTile = getRandomTile(0, (WIDTH / TILE_SIZE) - 1, 0, (HEIGHT / TILE_SIZE) - 1, randomTilesData.checkedTiles, randomTilesData.index, false);
-            if(selectedTile.type != "water") selectedTile.assignTileColor(season);
+            if(selectedTile.type != "water"){
+                selectedTile.assignTargetColor(season);
+                selectedTile.assignColor();
+            }
         }
     }
 }
@@ -180,7 +220,10 @@ function assignColorToRandomTrees(amount, season){
     for(let i = 0; i < amount; i++){
         if(randomTilesLeavesData.checkedTiles.length < ((WIDTH / TILE_SIZE) * (HEIGHT / TILE_SIZE))){
             let selectedTile = getRandomTile(0, (WIDTH / TILE_SIZE) - 1, 0, (HEIGHT / TILE_SIZE) - 1, randomTilesLeavesData.checkedTiles, randomTilesLeavesData.index, true);
-            if(selectedTile.feature == "tree") selectedTile.tree.assignLeavesColor(season);
+            if(selectedTile.feature == "tree"){
+                selectedTile.tree.assignLeavesTargetColor(season);
+                selectedTile.tree.assignLeavesColor();
+            }
         }
     }
 }
@@ -189,7 +232,8 @@ function assignColorToWater(season){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
             if(mapTiles[j][i].type == "water"){
-                mapTiles[j][i].assignTileColor(season);
+                mapTiles[j][i].assignTargetColor(season);
+                mapTiles[j][i].assignColor();
             }
         }
     }
@@ -202,9 +246,11 @@ for(let i = 0; i < mapTiles.length; i++){
 }
 
 class Tree{
-    constructor(type, leavesColor, trunkColor, hasLeaves){
+    constructor(type, leavesColor, leavesStartingColor, leavesTargetColor, trunkColor, hasLeaves){
         this.type = type;
         this.leavesColor = leavesColor;
+        this.leavesStartingColor = leavesStartingColor;
+        this.leavesTargetColor = leavesTargetColor;
         this.trunkColor = trunkColor;
         this.hasLeaves = hasLeaves;
     }
@@ -218,16 +264,22 @@ class Tree{
                 break;
         }
     }
-    assignLeavesColor(season){
+    assignLeavesColor(){
+        this.leavesColor = this.leavesTargetColor;
+    }
+    assignLeavesStartingColor(){
+        this.leavesStartingColor = this.leavesColor;
+    }
+    assignLeavesTargetColor(season){
         switch(season){
             case "spring":
                 switch(this.type){
                     case "deciduous":
                         this.hasLeaves = true;
-                        this.leavesColor = `rgb(${offsetNumber(42, 6)}, ${offsetNumber(109, 6)}, 33)`;
+                        this.leavesTargetColor = `rgb(${offsetNumber(42, 6)}, ${offsetNumber(109, 6)}, 33)`;
                         break;
                     case "conifer":
-                        this.leavesColor = `rgb(${offsetNumber(16, 5)}, 49, ${offsetNumber(20, 6)})`;
+                        this.leavesTargetColor = `rgb(${offsetNumber(16, 5)}, 49, ${offsetNumber(20, 6)})`;
                         break;
                 }
                 break;
@@ -235,10 +287,10 @@ class Tree{
                 switch(this.type){
                     case "deciduous":
                         this.hasLeaves = true;
-                        this.leavesColor = `rgb(${offsetNumber(54, 3)}, ${offsetNumber(104, 12)}, 31)`;
+                        this.leavesTargetColor = `rgb(${offsetNumber(54, 3)}, ${offsetNumber(104, 12)}, 31)`;
                         break;
                     case "conifer":
-                        this.leavesColor = `rgb(${offsetNumber(19, 8)}, 53, ${offsetNumber(18, 5)})`;
+                        this.leavesTargetColor = `rgb(${offsetNumber(19, 8)}, 53, ${offsetNumber(18, 5)})`;
                         break;
                 }
                 break;
@@ -248,24 +300,24 @@ class Tree{
                         this.hasLeaves = true;
                         switch(getRandomInt(0, 4)){
                             case 0:
-                                this.leavesColor = `rgb(${offsetNumber(155, 8)}, ${offsetNumber(149, 8)}, ${offsetNumber(34, 8)})`;
+                                this.leavesTargetColor = `rgb(${offsetNumber(155, 8)}, ${offsetNumber(149, 8)}, ${offsetNumber(34, 8)})`;
                                 break;
                             case 1:
-                                this.leavesColor = `rgb(${offsetNumber(211, 2)}, ${offsetNumber(150, 2)}, ${offsetNumber(39, 2)})`;
+                                this.leavesTargetColor = `rgb(${offsetNumber(211, 2)}, ${offsetNumber(150, 2)}, ${offsetNumber(39, 2)})`;
                                 break;
                             case 2:
-                                this.leavesColor = `rgb(${offsetNumber(198, 8)}, ${offsetNumber(118, 8)}, ${offsetNumber(14, 8)})`;
+                                this.leavesTargetColor = `rgb(${offsetNumber(198, 8)}, ${offsetNumber(118, 8)}, ${offsetNumber(14, 8)})`;
                                 break;
                             case 3:
-                                this.leavesColor = `rgb(${offsetNumber(190, 8)}, ${offsetNumber(62, 8)}, ${offsetNumber(24, 8)})`;
+                                this.leavesTargetColor = `rgb(${offsetNumber(190, 8)}, ${offsetNumber(62, 8)}, ${offsetNumber(24, 8)})`;
                                 break;
                             case 4:
-                                this.leavesColor = `rgb(${offsetNumber(164, 8)}, ${offsetNumber(37, 8)}, ${offsetNumber(22, 8)})`;
+                                this.leavesTargetColor = `rgb(${offsetNumber(164, 8)}, ${offsetNumber(37, 8)}, ${offsetNumber(22, 8)})`;
                                 break;
                         }
                         break;
                     case "conifer":
-                        this.leavesColor = `rgb(${offsetNumber(25, 8)}, 50, ${offsetNumber(10, 5)})`;
+                        this.leavesTargetColor = `rgb(${offsetNumber(25, 8)}, 50, ${offsetNumber(10, 5)})`;
                         break;
                 }
                 break;
@@ -275,7 +327,7 @@ class Tree{
                         this.hasLeaves = false;
                         break;
                     case "conifer":
-                        this.leavesColor = `rgb(${offsetNumber(21, 5)}, 49, ${offsetNumber(28, 6)})`;
+                        this.leavesTargetColor = `rgb(${offsetNumber(21, 5)}, 49, ${offsetNumber(28, 6)})`;
                         break;
                 }
                 break;
@@ -420,98 +472,26 @@ class Tile{
                 this.type = null;
         }
     }
-    assignTileColor(season){
-        switch(season){
-            case "spring":
-                switch(this.type){
-                    case "plains":
-                        this.color = `rgb(52, ${offsetNumber(140, 3)}, 49)`;
-                        break;
-                    case "forest_edge":
-                        this.color = `rgb(47, ${offsetNumber(131, 4)}, 43)`;
-                        break;
-                    case "forest":
-                        this.color = `rgb(42, ${offsetNumber(124, 5)}, 39)`;
-                        break;
-                    case "water":
-                        this.color = "#4495cf";
-                        break;
-                }
-                break;
-            case "summer":
-                switch(this.type){
-                    case "plains":
-                        this.color = `rgb(67, ${offsetNumber(140, 3)}, 49)`;
-                        break;
-                    case "forest_edge":
-                        this.color = `rgb(61, ${offsetNumber(131, 4)}, 43)`;
-                        break;
-                    case "forest":
-                        this.color = `rgb(56, ${offsetNumber(123, 5)}, 38)`;
-                        break;
-                    case "water":
-                        this.color = "#4495cf";
-                        break;
-                }
-                break;
-            case "autumn":
-                switch(this.type){
-                    case "plains":
-                        this.color = `rgb(104, ${offsetNumber(131, 3)}, 38)`;
-                        break;
-                    case "forest_edge":
-                        this.color = `rgb(${offsetNumber(99, 3)}, ${offsetNumber(122, 3)}, ${offsetNumber(32, 3)})`;
-                        break;
-                    case "forest":
-                        this.color = `rgb(${offsetNumber(97, 5)}, ${offsetNumber(117, 5)}, ${offsetNumber(24, 5)})`;
-                        break;
-                    case "water":
-                        this.color = "#4495cf";
-                        break;
-                }
-                break;
-            case "winter":
-                switch(this.type){
-                    case "plains":
-                        var snowColor = offsetNumber(242, 2);
-                        this.color = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
-                        break;
-                    case "forest_edge":
-                        var snowColor = offsetNumber(239, 2);
-                        this.color = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
-                        break;
-                    case "forest":
-                        var snowColor = offsetNumber(235, 3);
-                        this.color = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
-                        break;
-                    case "water":
-                        this.color = `rgb(${offsetNumber(219, 2)}, ${offsetNumber(241, 2)}, ${offsetNumber(253, 2)})`;
-                        break;
-                }
-                break;
-            default:
-                console.log("No season found @ assignTileColor(season)!");
-                break;
-        }
+    assignColor(){
+        this.color = this.targetColor;
     }
-    assignTileTargetColor(season){
+    assignStartingColor(){
+        this.startingColor = this.color;
+    }
+    assignTargetColor(season){
         switch(season){
             case "spring":
                 switch(this.type){
                     case "plains":
-                        this.startingColor = this.color;
                         this.targetColor = `rgb(52, ${offsetNumber(140, 3)}, 49)`;
                         break;
                     case "forest_edge":
-                        this.startingColor = this.color;
                         this.targetColor = `rgb(47, ${offsetNumber(131, 4)}, 43)`;
                         break;
                     case "forest":
-                        this.startingColor = this.color;
                         this.targetColor = `rgb(42, ${offsetNumber(124, 5)}, 39)`;
                         break;
                     case "water":
-                        this.startingColor = this.color;
                         this.targetColor = "#4495cf";
                         break;
                 }
@@ -519,19 +499,15 @@ class Tile{
             case "summer":
                 switch(this.type){
                     case "plains":
-                        this.startingColor = this.color;
                         this.targetColor = `rgb(67, ${offsetNumber(140, 3)}, 49)`;
                         break;
                     case "forest_edge":
-                        this.startingColor = this.color;
                         this.targetColor = `rgb(61, ${offsetNumber(131, 4)}, 43)`;
                         break;
                     case "forest":
-                        this.startingColor = this.color;
                         this.targetColor = `rgb(56, ${offsetNumber(123, 5)}, 38)`;
                         break;
                     case "water":
-                        this.startingColor = this.color;
                         this.targetColor = "#4495cf";
                         break;
                 }
@@ -539,19 +515,15 @@ class Tile{
             case "autumn":
                 switch(this.type){
                     case "plains":
-                        this.startingColor = this.color;
                         this.targetColor = `rgb(104, ${offsetNumber(131, 3)}, 38)`;
                         break;
                     case "forest_edge":
-                        this.startingColor = this.color;
                         this.targetColor = `rgb(${offsetNumber(99, 3)}, ${offsetNumber(122, 3)}, ${offsetNumber(32, 3)})`;
                         break;
                     case "forest":
-                        this.startingColor = this.color;
                         this.targetColor = `rgb(${offsetNumber(97, 5)}, ${offsetNumber(117, 5)}, ${offsetNumber(24, 5)})`;
                         break;
                     case "water":
-                        this.startingColor = this.color;
                         this.targetColor = "#4495cf";
                         break;
                 }
@@ -559,28 +531,24 @@ class Tile{
             case "winter":
                 switch(this.type){
                     case "plains":
-                        this.startingColor = this.color;
                         var snowColor = offsetNumber(242, 2);
                         this.targetColor = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
                         break;
                     case "forest_edge":
-                        this.startingColor = this.color;
                         var snowColor = offsetNumber(239, 2);
                         this.targetColor = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
                         break;
                     case "forest":
-                        this.startingColor = this.color;
                         var snowColor = offsetNumber(235, 3);
                         this.targetColor = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
                         break;
                     case "water":
-                        this.startingColor = this.color;
                         this.targetColor = `rgb(${offsetNumber(219, 2)}, ${offsetNumber(241, 2)}, ${offsetNumber(253, 2)})`;
                         break;
                 }
                 break;
             default:
-                console.log("No season found @ assignTileTargetColor(season)!");
+                console.log("No season found @ assignTargetColor(season)!");
                 break;
         }
     }
@@ -760,7 +728,8 @@ function createForestTemplate(){
         for(let i = 0; i < mapTiles[j].length; i++){
             mapTiles[j][i].setForestDensity(j, i);
             mapTiles[j][i].setTypeForest();
-            mapTiles[j][i].assignTileColor(season);
+            mapTiles[j][i].assignTargetColor(season);
+            mapTiles[j][i].assignColor();
         }
     }
 }
@@ -770,15 +739,6 @@ function drawFinalTile(){
         for(let i = 0; i < mapTiles[j].length; i++){
             mapTiles[j][i].drawTile();
             mapTiles[j][i].drawShading();
-        }
-    }
-}
-
-function assignSeasonColor(){
-    for(let j = 0; j < mapTiles.length; j++){
-        for(let i = 0; i < mapTiles[j].length; i++){
-            mapTiles[j][i].assignTileColor(season);
-            if(mapTiles[j][i].feature == "tree") mapTiles[j][i].tree.assignLeavesColor(season);
         }
     }
 }
@@ -824,11 +784,13 @@ function handleWinterSpringColors(){
 function handleSpringSummerColors(){
     switch(month){
         case 6:
-            if(day == 21) tempAssignTargetColor("summer");  // temporary (assings target color)
-            if(day > 21) shiftTileColor();  // start of summer grass color change
+            if(day == 21) assignStartingAndTargetColors("summer");  // assigning season colors
+            if(day > 21) shiftColor();  // start of summer color change
             break;
         case 7:
-            //if(day < 21) shiftTileColor();  // end of grass color change
+            if(year != startDate.year){  // start date related (temporary)
+                if(day < 21) shiftColor();  // end of summer color change
+            }
             break;
     }
 }
@@ -836,11 +798,11 @@ function handleSpringSummerColors(){
 function handleSummerAutumnColors(){
     switch(month){
         case 9:
-            if(day == 7) tempAssignTargetColor("autumn");  // temporary (assings target color)
-            if(day > 7) shiftTileColor();  // start of autumn grass color change
+            if(day == 7) assignStartingAndTargetColors("autumn");  // assigning season colors
+            if(day > 7) shiftColor();  // start of autumn color change
             break;
         case 10:
-            if(day < 28) shiftTileColor();  // end of autumn grass color change
+            if(day < 21) shiftColor();  // end of autumn color change
             break;
     }
 }
@@ -862,7 +824,8 @@ function generateForest(){
                             mapTiles[j][i].feature = "tree";
                             mapTiles[j][i].tree = new Tree(null, null, null);
                             mapTiles[j][i].tree.assignType();
-                            mapTiles[j][i].tree.assignLeavesColor(season);
+                            mapTiles[j][i].tree.assignLeavesTargetColor(season);
+                            mapTiles[j][i].tree.assignLeavesColor();
                             mapTiles[j][i].tree.assignTrunkColor();
                         }
                         break;
@@ -871,7 +834,8 @@ function generateForest(){
                             mapTiles[j][i].feature = "tree";
                             mapTiles[j][i].tree = new Tree(null, null, null);
                             mapTiles[j][i].tree.assignType();
-                            mapTiles[j][i].tree.assignLeavesColor(season);
+                            mapTiles[j][i].tree.assignLeavesTargetColor(season);
+                            mapTiles[j][i].tree.assignLeavesColor();
                             mapTiles[j][i].tree.assignTrunkColor();
                         }
                         break;
@@ -880,7 +844,8 @@ function generateForest(){
                             mapTiles[j][i].feature = "tree";
                             mapTiles[j][i].tree = new Tree(null, null, null);
                             mapTiles[j][i].tree.assignType();
-                            mapTiles[j][i].tree.assignLeavesColor(season);
+                            mapTiles[j][i].tree.assignLeavesTargetColor(season);
+                            mapTiles[j][i].tree.assignLeavesColor();
                             mapTiles[j][i].tree.assignTrunkColor();
                         }
                         break;
@@ -1063,25 +1028,25 @@ function nextDay(){
         case 3:
             if(day == springStart){
                 season = "spring";
-                seasonName = seasons[0];
+                seasonName = seasons.spring;
             }
             break;
         case 6:
             if(day == summerStart){
                 season = "summer";
-                seasonName = seasons[1];
+                seasonName = seasons.summer;
             }
             break;
         case 9:
             if(day == autumnStart){
                 season = "autumn";
-                seasonName = seasons[2];
+                seasonName = seasons.autumn;
             }
             break;
         case 12:
             if(day == winterStart){
                 season = "winter";
-                seasonName = seasons[3];
+                seasonName = seasons.winter;
             }
             break;
     }
