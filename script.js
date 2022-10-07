@@ -1097,30 +1097,39 @@ function update(){
 // User input
 function fastForwardTime(event){
     if(event.key === "Enter" && isPaused){
+        event.preventDefault();
         update();
     }
 }
 document.addEventListener("keydown", fastForwardTime);
 
-function changeTimeSped(event){
-    if(event.deltaY > 0 && updateTickSpeed < 2000){
-        clearInterval(updateInterval);
-        updateTickSpeed += 100;
-        updateInterval = setInterval(update, updateTickSpeed);
-    } else if(event.deltaY < 0 && updateTickSpeed > 100){
-        clearInterval(updateInterval);
-        updateTickSpeed -= 100;
-        updateInterval = setInterval(update, updateTickSpeed);
+function changeTimeSpeed(event){
+    if(!isPaused){
+        if(event.deltaY > 0 && updateTickSpeed < 2000){
+            event.preventDefault();
+            clearInterval(updateInterval);
+            updateTickSpeed += 100;
+            updateInterval = setInterval(update, updateTickSpeed);
+        } else if(event.deltaY < 0 && updateTickSpeed > 100){
+            event.preventDefault();
+            clearInterval(updateInterval);
+            updateTickSpeed -= 100;
+            updateInterval = setInterval(update, updateTickSpeed);
+        }
     }
 }
 let updateTickSpeed = 1000;
-document.addEventListener("wheel", changeTimeSped);
+let updateInterval = setInterval(update, updateTickSpeed);
+clearInterval(updateInterval);
+document.addEventListener("wheel", changeTimeSpeed, { passive: false });
 
 function toggleTime(event){
     if(event.key === " "){
+        event.preventDefault();
         if(isPaused){
             isPaused = false;
             update();
+            clearInterval(updateInterval);
             updateInterval = setInterval(update, updateTickSpeed);
         } else{
             isPaused = true;
