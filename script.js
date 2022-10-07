@@ -67,6 +67,80 @@ function offsetNumber(color, offset){
     console.log(checkedTiles);
 }*/
 
+function getRGBArray(color){
+    return color.substring(4, color.length - 1).replace(/ /g, "").split(",");
+}
+
+function shiftTileColor(){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            if(mapTiles[j][i].type != "water"){
+                shiftChannel(mapTiles[j][i], 2, "r");
+                shiftChannel(mapTiles[j][i], 2, "g");
+                shiftChannel(mapTiles[j][i], 2, "b");
+            }
+        }
+    }
+}
+
+function shiftChannel(tile, amount, channel){
+    switch(channel){
+        case "r":
+            var currentValue = parseInt(getRGBArray(tile.color)[0]);
+            var startingValue = parseInt(getRGBArray(tile.startingColor)[0]);
+            var targetValue = parseInt(getRGBArray(tile.targetColor)[0]);
+            break;
+        case "g":
+            var currentValue = parseInt(getRGBArray(tile.color)[1]);
+            var startingValue = parseInt(getRGBArray(tile.startingColor)[1]);
+            var targetValue = parseInt(getRGBArray(tile.targetColor)[1]);
+            break;
+        case "b":
+            var currentValue = parseInt(getRGBArray(tile.color)[2]);
+            var startingValue = parseInt(getRGBArray(tile.startingColor)[2]);
+            var targetValue = parseInt(getRGBArray(tile.targetColor)[2]);
+            break;
+        default:
+            console.log("No channel given @ shiftChannel(tile, amount, channel)");
+    }
+    
+    if(startingValue < targetValue){
+        if(currentValue < targetValue){
+            currentValue += amount;
+        } else{
+            currentValue = targetValue;
+        }
+    } else if(startingValue > targetValue){
+        if(currentValue > targetValue){
+            currentValue -= amount;
+        } else{
+            currentValue = targetValue;
+        }
+    }
+
+    switch(channel){
+        case "r":
+            tile.color = `rgb(${currentValue}, ${getRGBArray(tile.color)[1]}, ${getRGBArray(tile.color)[2]})`;
+            break;
+        case "g":
+            tile.color = `rgb(${getRGBArray(tile.color)[0]}, ${currentValue}, ${getRGBArray(tile.color)[2]})`;
+            break;
+        case "b":
+            tile.color = `rgb(${getRGBArray(tile.color)[0]}, ${getRGBArray(tile.color)[1]}, ${currentValue})`;
+            break;
+        default:
+            console.log("No channel given @ shiftChannel(tile, amount, channel)");
+    }
+}
+
+function tempAssignTargetColor(season){
+    for(let j = 0; j < mapTiles.length; j++){
+        for(let i = 0; i < mapTiles[j].length; i++){
+            mapTiles[j][i].assignTileTargetColor(season);
+        }
+    }
+}
+
 let randomTilesData = {checkedTiles: [], index: 0};
 let randomTilesLeavesData = {checkedTiles: [], index: 0};
 
@@ -292,13 +366,15 @@ class Village{
 }
 
 class Tile{
-    constructor(x, y, type, height, forestDensity, color, feature, tree, house){
+    constructor(x, y, type, height, forestDensity, color, startingColor, targetColor, feature, tree, house){
         this.x = x;
         this.y = y;
         this.type = type;
         this.height = height;
         this.forestDensity = forestDensity;
         this.color = color;
+        this.startingColor = startingColor;
+        this.targetColor = targetColor;
         this.feature = feature;
         this.tree = tree;
         this.house = house;
@@ -415,6 +491,96 @@ class Tile{
                 break;
             default:
                 console.log("No season found @ assignTileColor(season)!");
+                break;
+        }
+    }
+    assignTileTargetColor(season){
+        switch(season){
+            case "spring":
+                switch(this.type){
+                    case "plains":
+                        this.startingColor = this.color;
+                        this.targetColor = `rgb(52, ${offsetNumber(140, 3)}, 49)`;
+                        break;
+                    case "forest_edge":
+                        this.startingColor = this.color;
+                        this.targetColor = `rgb(47, ${offsetNumber(131, 4)}, 43)`;
+                        break;
+                    case "forest":
+                        this.startingColor = this.color;
+                        this.targetColor = `rgb(42, ${offsetNumber(124, 5)}, 39)`;
+                        break;
+                    case "water":
+                        this.startingColor = this.color;
+                        this.targetColor = "#4495cf";
+                        break;
+                }
+                break;
+            case "summer":
+                switch(this.type){
+                    case "plains":
+                        this.startingColor = this.color;
+                        this.targetColor = `rgb(67, ${offsetNumber(140, 3)}, 49)`;
+                        break;
+                    case "forest_edge":
+                        this.startingColor = this.color;
+                        this.targetColor = `rgb(61, ${offsetNumber(131, 4)}, 43)`;
+                        break;
+                    case "forest":
+                        this.startingColor = this.color;
+                        this.targetColor = `rgb(56, ${offsetNumber(123, 5)}, 38)`;
+                        break;
+                    case "water":
+                        this.startingColor = this.color;
+                        this.targetColor = "#4495cf";
+                        break;
+                }
+                break;
+            case "autumn":
+                switch(this.type){
+                    case "plains":
+                        this.startingColor = this.color;
+                        this.targetColor = `rgb(104, ${offsetNumber(131, 3)}, 38)`;
+                        break;
+                    case "forest_edge":
+                        this.startingColor = this.color;
+                        this.targetColor = `rgb(${offsetNumber(99, 3)}, ${offsetNumber(122, 3)}, ${offsetNumber(32, 3)})`;
+                        break;
+                    case "forest":
+                        this.startingColor = this.color;
+                        this.targetColor = `rgb(${offsetNumber(97, 5)}, ${offsetNumber(117, 5)}, ${offsetNumber(24, 5)})`;
+                        break;
+                    case "water":
+                        this.startingColor = this.color;
+                        this.targetColor = "#4495cf";
+                        break;
+                }
+                break;
+            case "winter":
+                switch(this.type){
+                    case "plains":
+                        this.startingColor = this.color;
+                        var snowColor = offsetNumber(242, 2);
+                        this.targetColor = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
+                        break;
+                    case "forest_edge":
+                        this.startingColor = this.color;
+                        var snowColor = offsetNumber(239, 2);
+                        this.targetColor = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
+                        break;
+                    case "forest":
+                        this.startingColor = this.color;
+                        var snowColor = offsetNumber(235, 3);
+                        this.targetColor = `rgb(${snowColor}, ${snowColor}, ${snowColor})`;
+                        break;
+                    case "water":
+                        this.startingColor = this.color;
+                        this.targetColor = `rgb(${offsetNumber(219, 2)}, ${offsetNumber(241, 2)}, ${offsetNumber(253, 2)})`;
+                        break;
+                }
+                break;
+            default:
+                console.log("No season found @ assignTileTargetColor(season)!");
                 break;
         }
     }
@@ -581,7 +747,7 @@ function createMapTemplate(){
     noise.seed(Math.random());
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
-            mapTiles[j][i] = new Tile(i, j, null, null, null, null, null, null, null);
+            mapTiles[j][i] = new Tile(i, j, null, null, null, null, null, null, null, null, null);
             mapTiles[j][i].setHeight(j, i);
             mapTiles[j][i].setTypeTopography();
         }
@@ -617,47 +783,73 @@ function assignSeasonColor(){
     }
 }
 
-function updateSeasonColor(){
+function handleAutumnWinterColors(){
     switch(month){
-        case 3:
-            if(day == 14) randomTilesLeavesData = {checkedTiles: [], index: 0};
-            if(day > 14) assignColorToRandomTrees(140, "spring");
-            if(day == 17){
-                assignColorToWater("spring");
-            }
-            break;
-        case 4:
-            if(day < 14) assignColorToRandomTrees(140, "spring");
-            if(day == 15) randomTilesData = {checkedTiles: [], index: 0};
-            if(day > 16) assignColorToRandomTiles(180, "spring");
-            break;
-        case 5:
-            if(day < 26) assignColorToRandomTiles(180, "spring");
-            break;
-        case 6:
-            if(day == summerStart){
-                assignSeasonColor();
-            }
-            break;
-        case 9:
-            if(day == autumnStart){
-                assignSeasonColor();
-            }
-            break;
         case 10:
-            if(day == 14) randomTilesLeavesData = {checkedTiles: [], index: 0};
-            if(day > 14) assignColorToRandomTrees(140, "winter");
+            if(day == 21) randomTilesLeavesData = {checkedTiles: [], index: 0};  // reseting random leaves data
+            if(day > 21) assignColorToRandomTrees(140, "winter");  // start of leaves falling
             break;
         case 11:
-            if(day < 14) assignColorToRandomTrees(140, "winter");
-            if(day == 15) randomTilesData = {checkedTiles: [], index: 0};
-            if(day > 16) assignColorToRandomTiles(180, "winter");
+            if(day < 21) assignColorToRandomTrees(140, "winter");  // end of leaves falling
+
+            if(day == 18) randomTilesData = {checkedTiles: [], index: 0};  // reseting random tiles data
+            else if(day > 18) assignColorToRandomTiles(180, "winter");  // start of snowfall
             break;
         case 12:
-            if(day == 12) assignColorToWater("winter");
-            if(day < 26) assignColorToRandomTiles(180, "winter");
+            if(day == 3) assignColorToWater("winter");  // water freezes
+
+            if(day < 18) assignColorToRandomTiles(180, "winter");  // end of snowfall
             break;
     }
+}
+
+function handleWinterSpringColors(){
+    switch(month){
+        case 3:
+            if(day == 14) randomTilesData = {checkedTiles: [], index: 0};  // reseting random tiles data
+            if(day > 14) assignColorToRandomTiles(180, "spring");  // start of snow melting
+
+            if(day == 18) assignColorToWater("spring");  // water unfreezes
+
+            if(day == 24) randomTilesLeavesData = {checkedTiles: [], index: 0};  // reseting random leaves data
+            if(day > 24) assignColorToRandomTrees(140, "spring");  // start of leaves growing
+            break;
+        case 4:
+            if(day < 7) assignColorToRandomTiles(180, "spring");  // snow melts completely
+            if(day < 21) assignColorToRandomTrees(140, "spring");  // end of leaves growing
+            break;
+    }
+}
+
+function handleSpringSummerColors(){
+    switch(month){
+        case 6:
+            if(day == 21) tempAssignTargetColor("summer");  // temporary (assings target color)
+            if(day > 21) shiftTileColor();  // start of summer grass color change
+            break;
+        case 7:
+            //if(day < 21) shiftTileColor();  // end of grass color change
+            break;
+    }
+}
+
+function handleSummerAutumnColors(){
+    switch(month){
+        case 9:
+            if(day == 7) tempAssignTargetColor("autumn");  // temporary (assings target color)
+            if(day > 7) shiftTileColor();  // start of autumn grass color change
+            break;
+        case 10:
+            if(day < 28) shiftTileColor();  // end of autumn grass color change
+            break;
+    }
+}
+
+function updateSeasonColor(){
+    handleAutumnWinterColors();
+    handleWinterSpringColors();
+    handleSpringSummerColors();
+    handleSummerAutumnColors();
 }
 
 function generateForest(){
