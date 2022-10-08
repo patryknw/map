@@ -136,33 +136,33 @@ function shiftChannel(tile, amount, channel, isTree){
     }
 }
 
-function shiftTileColor(){
+function shiftTileColor(amount){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
             if(mapTiles[j][i].type != "water"){
-                shiftChannel(mapTiles[j][i], 2, "r", false);
-                shiftChannel(mapTiles[j][i], 2, "g", false);
-                shiftChannel(mapTiles[j][i], 2, "b", false);
+                shiftChannel(mapTiles[j][i], amount, "r", false);
+                shiftChannel(mapTiles[j][i], amount, "g", false);
+                shiftChannel(mapTiles[j][i], amount, "b", false);
             }
         }
     }
 }
 
-function shiftLeavesColor(){
+function shiftLeavesColor(amount){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
             if(mapTiles[j][i].feature == "tree"){
-                shiftChannel(mapTiles[j][i], 4, "r", true);
-                shiftChannel(mapTiles[j][i], 4, "g", true);
-                shiftChannel(mapTiles[j][i], 4, "b", true);
+                shiftChannel(mapTiles[j][i], amount, "r", true);
+                shiftChannel(mapTiles[j][i], amount, "g", true);
+                shiftChannel(mapTiles[j][i], amount, "b", true);
             }
         }
     }
 }
 
-function shiftColor(){
-    shiftTileColor();
-    shiftLeavesColor();
+function shiftColor(tileAmount, leavesAmount){
+    shiftTileColor(tileAmount);
+    shiftLeavesColor(leavesAmount);
 }
 
 function assignStartingAndTargetColors(season){
@@ -787,11 +787,11 @@ function handleSpringSummerColors(){
     switch(month){
         case 6:
             if(day == 21) assignStartingAndTargetColors("summer");  // assigning season colors
-            if(day > 21) shiftColor();  // start of summer color change
+            if(day > 21) shiftColor(1, 1);  // start of summer color change
             break;
         case 7:
             if(year != startDate.year){  // start date related (temporary)
-                if(day < 21) shiftColor();  // end of summer color change
+                if(day < 21) shiftColor(1, 1);  // end of summer color change
             }
             break;
     }
@@ -801,10 +801,10 @@ function handleSummerAutumnColors(){
     switch(month){
         case 9:
             if(day == 7) assignStartingAndTargetColors("autumn");  // assigning season colors
-            if(day > 7) shiftColor();  // start of autumn color change
+            if(day > 7) shiftColor(2, 4);  // start of autumn color change
             break;
         case 10:
-            if(day < 21) shiftColor();  // end of autumn color change
+            if(day < 21) shiftColor(2, 4);  // end of autumn color change
             break;
     }
 }
