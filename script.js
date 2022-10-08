@@ -246,13 +246,15 @@ for(let i = 0; i < mapTiles.length; i++){
 }
 
 class Tree{
-    constructor(type, leavesColor, leavesStartingColor, leavesTargetColor, trunkColor, hasLeaves){
+    constructor(type, leavesColor, leavesStartingColor, leavesTargetColor, trunkColor, hasLeaves, offsetX, offsetY){
         this.type = type;
         this.leavesColor = leavesColor;
         this.leavesStartingColor = leavesStartingColor;
         this.leavesTargetColor = leavesTargetColor;
         this.trunkColor = trunkColor;
         this.hasLeaves = hasLeaves;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
     }
     assignType(){
         switch(getRandomInt(0, 1)){
@@ -342,6 +344,10 @@ class Tree{
                 this.trunkColor = `rgb(${offsetNumber(64, 5)}, ${offsetNumber(49, 5)}, ${offsetNumber(33, 5)})`;
                 break;
         }
+    }
+    offsetTree(){
+        this.offsetX = Math.floor(Math.random() * ((TILE_SIZE / 5) * 2) + 1) - (TILE_SIZE / 5);
+        this.offsetY = Math.floor(Math.random() * (TILE_SIZE / 5) * -2);
     }
 }
 
@@ -574,12 +580,8 @@ class Tile{
         ctx.fillRect(this.x * TILE_SIZE, this.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         ctx.globalCompositeOperation = "source-over";
     }
-    drawTree(treeType, leavesColor, trunkColor, hasLeaves){
+    drawTree(treeType, leavesColor, trunkColor, hasLeaves, offsetX, offsetY){
         this.feature = "tree";
-        // let offsetX = Math.floor(Math.random() * ((TILE_SIZE / 5) * 2) + 1) - (TILE_SIZE / 5);
-        // let offsetY = Math.floor(Math.random() * (TILE_SIZE / 5) * -2);
-        let offsetX = 0;
-        let offsetY = 0;
         switch(treeType){
             case "deciduous":
                 // Trunk
@@ -822,7 +824,7 @@ function generateForest(){
                     case "plains":
                         if(getRandomInt(0, 50) == 0){
                             mapTiles[j][i].feature = "tree";
-                            mapTiles[j][i].tree = new Tree(null, null, null);
+                            mapTiles[j][i].tree = new Tree(null, null, null, null, null, null, 0, 0);
                             mapTiles[j][i].tree.assignType();
                             mapTiles[j][i].tree.assignLeavesTargetColor(season);
                             mapTiles[j][i].tree.assignLeavesColor();
@@ -832,7 +834,7 @@ function generateForest(){
                     case "forest_edge":
                         if(getRandomInt(0, 2) == 0){
                             mapTiles[j][i].feature = "tree";
-                            mapTiles[j][i].tree = new Tree(null, null, null);
+                            mapTiles[j][i].tree = new Tree(null, null, null, null, null, null, 0, 0);
                             mapTiles[j][i].tree.assignType();
                             mapTiles[j][i].tree.assignLeavesTargetColor(season);
                             mapTiles[j][i].tree.assignLeavesColor();
@@ -842,7 +844,7 @@ function generateForest(){
                     case "forest":
                         if(getRandomInt(0, 4) != 0){
                             mapTiles[j][i].feature = "tree";
-                            mapTiles[j][i].tree = new Tree(null, null, null);
+                            mapTiles[j][i].tree = new Tree(null, null, null, null, null, null, 0, 0);
                             mapTiles[j][i].tree.assignType();
                             mapTiles[j][i].tree.assignLeavesTargetColor(season);
                             mapTiles[j][i].tree.assignLeavesColor();
@@ -863,16 +865,7 @@ function generateForest(){
 function drawForest(){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
-            if(mapTiles[j][i].feature == "tree"){
-                switch(getRandomInt(0, 1)){
-                    case 0:
-                        mapTiles[j][i].drawTree(mapTiles[j][i].tree.type, mapTiles[j][i].tree.leavesColor, mapTiles[j][i].tree.trunkColor, mapTiles[j][i].tree.hasLeaves);
-                        break;
-                    case 1:
-                        mapTiles[j][i].drawTree(mapTiles[j][i].tree.type, mapTiles[j][i].tree.leavesColor, mapTiles[j][i].tree.trunkColor, mapTiles[j][i].tree.hasLeaves);
-                        break;
-                }
-            }
+            if(mapTiles[j][i].feature == "tree") mapTiles[j][i].drawTree(mapTiles[j][i].tree.type, mapTiles[j][i].tree.leavesColor, mapTiles[j][i].tree.trunkColor, mapTiles[j][i].tree.hasLeaves, mapTiles[j][i].tree.offsetX, mapTiles[j][i].tree.offsetY);
         }
     }
 }
