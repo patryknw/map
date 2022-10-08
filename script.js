@@ -1100,12 +1100,23 @@ function displayDate(inConsole, onScreen){
     if(inConsole) console.log(`${day}.${month}.${year}\n${seasonName}\n${dayName}, ${day} ${monthName} ${year}`);
     if(onScreen){
         ctx.fillStyle = "#000000";
-        ctx.font = `bold ${Math.floor(WIDTH / 66)}px Pristina`;
         ctx.textAlign = "center";
+        ctx.strokeStyle = "#e1e1e1";
+        ctx.lineWidth = 1;
+        ctx.font = `bold ${Math.floor(WIDTH / 66)}px Pristina`;
+        /*ctx.strokeText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
         ctx.fillText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
-        ctx.fillText(`${dayName}, ${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);
-        //ctx.fillText(`${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);
-        //ctx.fillText(`${dayName}`, WIDTH / 2, HEIGHT / 8);
+        ctx.strokeText(`${dayName}, ${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);
+        ctx.fillText(`${dayName}, ${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);*/
+        ctx.textAlign = "center";
+        ctx.strokeText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
+        ctx.fillText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
+        ctx.textAlign = "right";
+        ctx.strokeText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64), HEIGHT / 11);
+        ctx.fillText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64), HEIGHT / 11);
+        ctx.textAlign = "left";
+        ctx.strokeText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 11);
+        ctx.fillText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 11);
     }
 }
 
@@ -1130,10 +1141,24 @@ function update(){
     drawHouses();
     drawForest();
     displayDate(true, true);
-    console.log(updateTickSpeed);
+    console.log(`game is running at ${updateTickSpeed} tickSpeed`);
 }
 
 // User input
+let isFullscreen = false;
+function toggleFullscreen(event){
+    if(event.key === "f"){
+        if(!isFullscreen){
+            document.documentElement.requestFullscreen();
+            isFullscreen = true;
+        } else{
+            document.exitFullscreen();
+            isFullscreen = false;
+        }
+    }
+}
+document.addEventListener("keyup", toggleFullscreen);
+
 function fastForwardTime(event){
     if(event.key === "Enter" && isPaused){
         event.preventDefault();
