@@ -790,39 +790,39 @@ function setMeteorologyData(){
 }
 
 function handleWinterColors(){
+    let snowfallAmount = Math.floor((WIDTH * HEIGHT) / 11520);
+    let leavesFallAmount = Math.floor((WIDTH * HEIGHT) / 10368);
     switch(month){
         case 10:
             if(day == meteorologyData.winterLeavesShift) randomTilesLeavesData = {checkedTiles: [], index: 0};  // reseting random leaves data
-            if(day > meteorologyData.winterLeavesShift) assignColorToRandomTrees(140, "winter");  // start of leaves falling
+            if(day > meteorologyData.winterLeavesShift) assignColorToRandomTrees(leavesFallAmount, "winter");  // start of leaves falling
             break;
         case 11:
-            if(day < meteorologyData.winterLeavesShift) assignColorToRandomTrees(140, "winter");  // end of leaves falling
-
+            if(day < meteorologyData.winterLeavesShift) assignColorToRandomTrees(leavesFallAmount, "winter");  // end of leaves falling
             if(day == meteorologyData.winterTileShift) randomTilesData = {checkedTiles: [], index: 0};  // reseting random tiles data
-            else if(day > meteorologyData.winterTileShift) assignColorToRandomTiles(180, "winter");  // start of snowfall
+            else if(day > meteorologyData.winterTileShift) assignColorToRandomTiles(snowfallAmount, "winter");  // start of snowfall
             break;
         case 12:
             if(day == meteorologyData.waterFreeze) assignColorToWater("winter");  // water freezes
-
-            if(day < meteorologyData.winterTileShift) assignColorToRandomTiles(180, "winter");  // end of snowfall
+            if(day < meteorologyData.winterTileShift) assignColorToRandomTiles(snowfallAmount, "winter");  // end of snowfall
             break;
     }
 }
 
 function handleSpringColors(){
+    let snowMeltAmount = Math.floor((WIDTH * HEIGHT) / 11520);
+    let leavesGrowthAmount = Math.floor((WIDTH * HEIGHT) / 10368);
     switch(month){
         case 3:
             if(day == meteorologyData.springTileShift) randomTilesData = {checkedTiles: [], index: 0};  // reseting random tiles data
-            if(day > meteorologyData.springTileShift) assignColorToRandomTiles(180, "spring");  // start of snow melting
-
+            if(day > meteorologyData.springTileShift) assignColorToRandomTiles(snowMeltAmount, "spring");  // start of snow melting
             if(day == meteorologyData.waterUnfreeze) assignColorToWater("spring");  // water unfreezes
-
             if(day == meteorologyData.springLeavesShift) randomTilesLeavesData = {checkedTiles: [], index: 0};  // reseting random leaves data
-            if(day > meteorologyData.springLeavesShift) assignColorToRandomTrees(140, "spring");  // start of leaves growing
+            if(day > meteorologyData.springLeavesShift) assignColorToRandomTrees(leavesGrowthAmount, "spring");  // start of leaves growing
             break;
         case 4:
-            if(day < meteorologyData.springTileShift) assignColorToRandomTiles(180, "spring");  // snow melts completely
-            if(day < meteorologyData.springLeavesShift) assignColorToRandomTrees(140, "spring");  // end of leaves growing
+            if(day < meteorologyData.springTileShift) assignColorToRandomTiles(snowMeltAmount, "spring");  // snow melts completely
+            if(day < meteorologyData.springLeavesShift) assignColorToRandomTrees(leavesGrowthAmount, "spring");  // end of leaves growing
             break;
     }
 }
@@ -972,7 +972,7 @@ function generateVillage(){
     mapTiles[villageY][villageX].feature.setNumberOfHouses();
     mapTiles[villageY][villageX].feature.setReligion();
     mapTiles[villageY][villageX].feature.setChurch();
-    mapTiles[villageY][villageX].drawDebug("#00ffff");
+    //mapTiles[villageY][villageX].drawDebug("#00ffff");
 
     let houseCount = 0;
     let inhabitantsCount = 0;
@@ -1096,68 +1096,74 @@ function nextDay(){
     monthName = months[month - 1];
 }
 
-function displayDate(inConsole, onScreen){
-    if(inConsole) console.log(`${day}.${month}.${year}\n${seasonName}\n${dayName}, ${day} ${monthName} ${year}`);
-    if(onScreen){
+function displayDate(){
+    //if(inConsole) console.log(`${day}.${month}.${year}\n${seasonName}\n${dayName}, ${day} ${monthName} ${year}`);
+    if(!isUIHidden){
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
         ctx.strokeStyle = "#e1e1e1";
         ctx.lineWidth = 1;
-        ctx.font = `bold ${Math.floor(WIDTH / 66)}px Pristina`;
+        ctx.font = `bold ${Math.floor(WIDTH / 72)}px Pristina`;
         /*ctx.strokeText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
         ctx.fillText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
         ctx.strokeText(`${dayName}, ${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);
         ctx.fillText(`${dayName}, ${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);*/
         ctx.textAlign = "center";
-        ctx.strokeText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
-        ctx.fillText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
+        ctx.strokeText(`${seasonName}`, WIDTH / 2, HEIGHT / 28);
+        ctx.fillText(`${seasonName}`, WIDTH / 2, HEIGHT / 28);
         ctx.textAlign = "right";
-        ctx.strokeText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64), HEIGHT / 11);
-        ctx.fillText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64), HEIGHT / 11);
+        ctx.strokeText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64), HEIGHT / 14);
+        ctx.fillText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64), HEIGHT / 14);
         ctx.textAlign = "left";
-        ctx.strokeText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 11);
-        ctx.fillText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 11);
+        ctx.strokeText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
+        ctx.fillText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
     }
-}
-
-function init(){
-    createMapTemplate();
-    createForestTemplate();
-    drawFinalTile();
-    generateStandaloneHouse();
-    generateVillage();
-    generateForest();
-    drawHouses();
-    drawForest();
-    setMeteorologyData();
-    displayDate(true, true);
-}
-init();
-
-function update(){
-    nextDay();
-    updateSeasonColor();
-    drawFinalTile();
-    drawHouses();
-    drawForest();
-    displayDate(true, true);
-    console.log(`game is running at ${updateTickSpeed} tickSpeed`);
 }
 
 // User input
 let isFullscreen = false;
-function toggleFullscreen(event){
-    if(event.key === "f"){
-        if(!isFullscreen){
-            document.documentElement.requestFullscreen();
-            isFullscreen = true;
-        } else{
-            document.exitFullscreen();
-            isFullscreen = false;
-        }
+function toggleFullscreen(){
+    if(!isFullscreen){
+        document.documentElement.requestFullscreen();
+        isFullscreen = true;
+    } else{
+        document.exitFullscreen();
+        isFullscreen = false;
     }
 }
-document.addEventListener("keyup", toggleFullscreen);
+
+let isCursorHidden = false;
+function toggleCursor(){
+    if(!isCursorHidden){
+        document.documentElement.style.cursor = "none";
+        isCursorHidden = true;
+    } else{
+        document.documentElement.style.cursor = "default";
+        isCursorHidden = false;
+    }
+}
+
+let isUIHidden = false;
+function toggleUI(){
+    if(!isUIHidden){
+        isUIHidden = true;
+    } else{
+        isUIHidden = false;
+    }
+}
+
+let isPaused = true;
+function toggleTime(){
+    if(isPaused){
+        isPaused = false;
+        update();
+        clearInterval(updateInterval);
+        updateInterval = setInterval(update, updateTickSpeed);
+    } else{
+        isPaused = true;
+        clearInterval(updateInterval);
+    }
+}
 
 function fastForwardTime(event){
     if(event.key === "Enter" && isPaused){
@@ -1187,19 +1193,41 @@ let updateInterval = setInterval(update, updateTickSpeed);
 clearInterval(updateInterval);
 document.addEventListener("wheel", changeTimeSpeed, { passive: false });
 
-function toggleTime(event){
+document.addEventListener("keyup", (event) => {
+    event.preventDefault();
     if(event.key === " "){
-        event.preventDefault();
-        if(isPaused){
-            isPaused = false;
-            update();
-            clearInterval(updateInterval);
-            updateInterval = setInterval(update, updateTickSpeed);
-        } else{
-            isPaused = true;
-            clearInterval(updateInterval);
-        }
+        toggleTime();
+    } else if(event.key === "f"){
+        toggleFullscreen();
+        toggleCursor();
+    } else if(event.key === "v"){
+        toggleCursor();
+    } else if(event.key === "h"){
+        toggleUI();
     }
+});
+
+// Initialisation
+function init(){
+    createMapTemplate();
+    createForestTemplate();
+    drawFinalTile();
+    generateStandaloneHouse();
+    generateVillage();
+    generateForest();
+    drawHouses();
+    drawForest();
+    setMeteorologyData();
+    displayDate();
 }
-let isPaused = true;
-document.addEventListener("keyup", toggleTime);
+init();
+
+// Update
+function update(){
+    nextDay();
+    updateSeasonColor();
+    drawFinalTile();
+    drawHouses();
+    drawForest();
+    displayDate();
+}
