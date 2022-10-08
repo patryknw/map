@@ -37,10 +37,24 @@ let dayName = days[weekdayNumber - 1];
 let monthName = months[month - 1];
 let seasonName = seasons[startDate.season];
 
-let springStart = 20;
-let summerStart = 21;
-let autumnStart = 23;
-let winterStart = 21;
+let meteorologyData = {
+    springStart: 20,
+    summerStart: 21,
+    autumnStart: 23,
+    winterStart: 21,
+    
+    springTileShift: 14,
+    springLeavesShift: 24,
+    summerTileShift: 21,
+    summerLeavesShift: 21,
+    autumnTileShift: 7,
+    autumnLeavesShift: 7,
+    winterTileShift: 18,
+    winterLeavesShift: 21,
+
+    waterFreeze: 3,
+    waterUnfreeze: 18
+}
 
 function getRandomInt(min, max){
     min = Math.ceil(min);
@@ -48,8 +62,8 @@ function getRandomInt(min, max){
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function offsetNumber(color, offset){
-    return getRandomInt(color - offset, color + offset);
+function offsetNumber(number, offset){
+    return getRandomInt(number - offset, number + offset);
 }
 
 function getRGBArray(color){
@@ -745,75 +759,105 @@ function drawFinalTile(){
     }
 }
 
-function handleAutumnWinterColors(){
+function setMeteorologyData(){
+    // Start of meteorological seasons
+    if(getRandomInt(0, 9) != 0) meteorologyData.springStart = 20;
+    else meteorologyData.springStart = 21;
+    if(getRandomInt(0, 3) != 0) meteorologyData.summerStart = 21;
+    else meteorologyData.summerStart = 20;
+    if(getRandomInt(0, 1) != 0) meteorologyData.autumnStart = 23;
+    else meteorologyData.autumnStart = 22;
+    if(getRandomInt(0, 2) != 0) meteorologyData.winterStart = 21;
+    else meteorologyData.winterStart = 22;
+    
+    // Offsetting seasonal events starts
+    let springOffset = offsetNumber(0, 6);
+    let summerOffset = offsetNumber(0, 6);
+    let autumnOffset = offsetNumber(0, 6);
+    let winterOffset = offsetNumber(0, 6);
+
+    meteorologyData.springTileShift = 14 + springOffset;
+    meteorologyData.springLeavesShift = 24 + springOffset;
+    meteorologyData.summerTileShift = 21 + summerOffset;
+    meteorologyData.summerLeavesShift = 21 + summerOffset;
+    meteorologyData.autumnTileShift = 7 + autumnOffset;
+    meteorologyData.autumnLeavesShift = 7 + autumnOffset;
+    meteorologyData.winterTileShift = 18 + winterOffset;
+    meteorologyData.winterLeavesShift = 21 + winterOffset;
+
+    meteorologyData.waterFreeze = offsetNumber(3, 2);
+    meteorologyData.waterUnfreeze = 18 + springOffset;
+}
+
+function handleWinterColors(){
     switch(month){
         case 10:
-            if(day == 21) randomTilesLeavesData = {checkedTiles: [], index: 0};  // reseting random leaves data
-            if(day > 21) assignColorToRandomTrees(140, "winter");  // start of leaves falling
+            if(day == meteorologyData.winterLeavesShift) randomTilesLeavesData = {checkedTiles: [], index: 0};  // reseting random leaves data
+            if(day > meteorologyData.winterLeavesShift) assignColorToRandomTrees(140, "winter");  // start of leaves falling
             break;
         case 11:
-            if(day < 21) assignColorToRandomTrees(140, "winter");  // end of leaves falling
+            if(day < meteorologyData.winterLeavesShift) assignColorToRandomTrees(140, "winter");  // end of leaves falling
 
-            if(day == 18) randomTilesData = {checkedTiles: [], index: 0};  // reseting random tiles data
-            else if(day > 18) assignColorToRandomTiles(180, "winter");  // start of snowfall
+            if(day == meteorologyData.winterTileShift) randomTilesData = {checkedTiles: [], index: 0};  // reseting random tiles data
+            else if(day > meteorologyData.winterTileShift) assignColorToRandomTiles(180, "winter");  // start of snowfall
             break;
         case 12:
-            if(day == 3) assignColorToWater("winter");  // water freezes
+            if(day == meteorologyData.waterFreeze) assignColorToWater("winter");  // water freezes
 
-            if(day < 18) assignColorToRandomTiles(180, "winter");  // end of snowfall
+            if(day < meteorologyData.winterTileShift) assignColorToRandomTiles(180, "winter");  // end of snowfall
             break;
     }
 }
 
-function handleWinterSpringColors(){
+function handleSpringColors(){
     switch(month){
         case 3:
-            if(day == 14) randomTilesData = {checkedTiles: [], index: 0};  // reseting random tiles data
-            if(day > 14) assignColorToRandomTiles(180, "spring");  // start of snow melting
+            if(day == meteorologyData.springTileShift) randomTilesData = {checkedTiles: [], index: 0};  // reseting random tiles data
+            if(day > meteorologyData.springTileShift) assignColorToRandomTiles(180, "spring");  // start of snow melting
 
-            if(day == 18) assignColorToWater("spring");  // water unfreezes
+            if(day == meteorologyData.waterUnfreeze) assignColorToWater("spring");  // water unfreezes
 
-            if(day == 24) randomTilesLeavesData = {checkedTiles: [], index: 0};  // reseting random leaves data
-            if(day > 24) assignColorToRandomTrees(140, "spring");  // start of leaves growing
+            if(day == meteorologyData.springLeavesShift) randomTilesLeavesData = {checkedTiles: [], index: 0};  // reseting random leaves data
+            if(day > meteorologyData.springLeavesShift) assignColorToRandomTrees(140, "spring");  // start of leaves growing
             break;
         case 4:
-            if(day < 7) assignColorToRandomTiles(180, "spring");  // snow melts completely
-            if(day < 21) assignColorToRandomTrees(140, "spring");  // end of leaves growing
+            if(day < meteorologyData.springTileShift) assignColorToRandomTiles(180, "spring");  // snow melts completely
+            if(day < meteorologyData.springLeavesShift) assignColorToRandomTrees(140, "spring");  // end of leaves growing
             break;
     }
 }
 
-function handleSpringSummerColors(){
+function handleSummerColors(){
     switch(month){
         case 6:
-            if(day == 21) assignStartingAndTargetColors("summer");  // assigning season colors
-            if(day > 21) shiftColor(1, 1);  // start of summer color change
+            if(day == meteorologyData.summerTileShift) assignStartingAndTargetColors("summer");  // assigning season colors
+            if(day > meteorologyData.summerTileShift) shiftColor(1, 1);  // start of summer color change
             break;
         case 7:
             if(year != startDate.year){  // start date related (temporary)
-                if(day < 21) shiftColor(1, 1);  // end of summer color change
+                if(day < meteorologyData.summerTileShift) shiftColor(1, 1);  // end of summer color change
             }
             break;
     }
 }
 
-function handleSummerAutumnColors(){
+function handleAutumnColors(){
     switch(month){
         case 9:
-            if(day == 7) assignStartingAndTargetColors("autumn");  // assigning season colors
-            if(day > 7) shiftColor(2, 4);  // start of autumn color change
+            if(day == meteorologyData.autumnTileShift) assignStartingAndTargetColors("autumn");  // assigning season colors
+            if(day > meteorologyData.autumnTileShift) shiftColor(2, 4);  // start of autumn color change
             break;
         case 10:
-            if(day < 21) shiftColor(2, 4);  // end of autumn color change
+            shiftColor(2, 4);  // end of autumn color change
             break;
     }
 }
 
 function updateSeasonColor(){
-    handleAutumnWinterColors();
-    handleWinterSpringColors();
-    handleSpringSummerColors();
-    handleSummerAutumnColors();
+    handleWinterColors();
+    handleSpringColors();
+    handleSummerColors();
+    handleAutumnColors();
 }
 
 function generateForest(){
@@ -982,6 +1026,7 @@ function nextDay(){
             } else{
                 year++;
                 month = 1;
+                setMeteorologyData();
             }
         }
     } else if(day == 30 + 1){
@@ -1019,25 +1064,25 @@ function nextDay(){
 
     switch(month){
         case 3:
-            if(day == springStart){
+            if(day == meteorologyData.springStart){
                 season = "spring";
                 seasonName = seasons.spring;
             }
             break;
         case 6:
-            if(day == summerStart){
+            if(day == meteorologyData.summerStart){
                 season = "summer";
                 seasonName = seasons.summer;
             }
             break;
         case 9:
-            if(day == autumnStart){
+            if(day == meteorologyData.autumnStart){
                 season = "autumn";
                 seasonName = seasons.autumn;
             }
             break;
         case 12:
-            if(day == winterStart){
+            if(day == meteorologyData.winterStart){
                 season = "winter";
                 seasonName = seasons.winter;
             }
@@ -1073,6 +1118,7 @@ function init(){
     generateForest();
     drawHouses();
     drawForest();
+    setMeteorologyData();
     displayDate(true, true);
 }
 init();
