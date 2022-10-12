@@ -1,7 +1,7 @@
 /* TODO
  * village prosperity
  * different house variants based on the village's wealth (eg. white houses from Zalipie village)
- * zoom mechanic
+ * figure out zoom mechanic
  * land fertility mechanic
  * forest generation fully based on perlin
  */
@@ -55,6 +55,8 @@ let meteorologyData = {
     waterFreeze: 3,
     waterUnfreeze: 18
 }
+
+document.title = seasonName;
 
 function getRandomInt(min, max){
     min = Math.ceil(min);
@@ -1067,24 +1069,28 @@ function nextDay(){
             if(day == meteorologyData.springStart){
                 season = "spring";
                 seasonName = seasons.spring;
+                document.title = seasonName;
             }
             break;
         case 6:
             if(day == meteorologyData.summerStart){
                 season = "summer";
                 seasonName = seasons.summer;
+                document.title = seasonName;
             }
             break;
         case 9:
             if(day == meteorologyData.autumnStart){
                 season = "autumn";
                 seasonName = seasons.autumn;
+                document.title = seasonName;
             }
             break;
         case 12:
             if(day == meteorologyData.winterStart){
                 season = "winter";
                 seasonName = seasons.winter;
+                document.title = seasonName;
             }
             break;
     }
@@ -1147,8 +1153,15 @@ let isUIHidden = false;
 function toggleUI(){
     if(!isUIHidden){
         isUIHidden = true;
+        drawFinalTile();
+        drawHouses();
+        drawForest();
     } else{
         isUIHidden = false;
+        drawFinalTile();
+        drawHouses();
+        drawForest();
+        displayDate();
     }
 }
 
