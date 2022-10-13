@@ -1,6 +1,6 @@
-<center><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Large_coat_of_arms_of_polish-lithuanian_commonwealth_under_jagiellon.svg/1200px-Large_coat_of_arms_of_polish-lithuanian_commonwealth_under_jagiellon.svg.png" alt="Coat of Arms of Polish-Lithuanian Commonwealth" width="400px"/><h3><i>"Si Deus nobiscum, quis contra nos"</i></h3></center>
+<p align="center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Large_coat_of_arms_of_polish-lithuanian_commonwealth_under_jagiellon.svg/1200px-Large_coat_of_arms_of_polish-lithuanian_commonwealth_under_jagiellon.svg.png" alt="Coat of Arms of Polish-Lithuanian Commonwealth" width="400px"/></p><h3><p align="center"><i>"Si Deus nobiscum, quis contra nos"</i></p></h3>
 
-## About
+## Abouts
 A 2D procedural landscape generator with seasons simulation. Made as a personal hobby project. Time period and place portrayed here is sixteenth-century Polish-Lithuanian Commonwealth.
 
 ## Controls
