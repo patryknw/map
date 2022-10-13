@@ -1178,14 +1178,6 @@ function toggleTime(){
     }
 }
 
-function fastForwardTime(event){
-    if(event.key === "Enter" && isPaused){
-        event.preventDefault();
-        update();
-    }
-}
-document.addEventListener("keydown", fastForwardTime);
-
 function changeTimeSpeed(event){
     if(!isPaused){
         if(event.deltaY > 0 && updateTickSpeed < 2000){
@@ -1206,17 +1198,28 @@ let updateInterval = setInterval(update, updateTickSpeed);
 clearInterval(updateInterval);
 document.addEventListener("wheel", changeTimeSpeed, { passive: false });
 
-document.addEventListener("keyup", (event) => {
-    event.preventDefault();
-    if(event.key === " "){
-        toggleTime();
-    } else if(event.key === "f"){
-        toggleFullscreen();
-        toggleCursor();
-    } else if(event.key === "v"){
-        toggleCursor();
-    } else if(event.key === "h"){
-        toggleUI();
+document.addEventListener("keydown", (event) => {
+    switch(event.key){
+        case " ":
+            event.preventDefault();
+            if(!event.repeat) toggleTime();
+            break;
+        case "Enter":
+            event.preventDefault();
+            if(!event.repeat) update();
+            break;
+        case "f":
+            event.preventDefault();
+            if(!event.repeat){ toggleFullscreen(); toggleCursor(); }
+            break;
+        case "v":
+            event.preventDefault();
+            if(!event.repeat) toggleCursor();
+            break;
+        case "h":
+            event.preventDefault();
+            if(!event.repeat) toggleUI();
+            break;
     }
 });
 
