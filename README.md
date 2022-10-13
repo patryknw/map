@@ -1,4 +1,4 @@
-<p align="center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Large_coat_of_arms_of_polish-lithuanian_commonwealth_under_jagiellon.svg/1200px-Large_coat_of_arms_of_polish-lithuanian_commonwealth_under_jagiellon.svg.png" alt="Coat of Arms of Polish-Lithuanian Commonwealth" width="400px"/></p><h3><p align="center"><i>"Si Deus nobiscum, quis contra nos"</i></p></h3>
+<p align="center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Large_coat_of_arms_of_polish-lithuanian_commonwealth_under_jagiellon.svg/1200px-Large_coat_of_arms_of_polish-lithuanian_commonwealth_under_jagiellon.svg.png" alt="Coat of Arms of Polish-Lithuanian Commonwealth" width="400px"/></p><h3><p align="center"><i>"Si Deus nobiscum, quis contra nos"</i></p></h3><br/>
 
 ## Abouts
 A 2D procedural landscape generator with seasons simulation. Made as a personal hobby project. Time period and place portrayed here is sixteenth-century Polish-Lithuanian Commonwealth.
@@ -8,7 +8,7 @@ You can control the speed of time. By default it is one day per second, once you
 - Space - pause/unpause time
 - Scroll up - speed up time
 - Scroll down - slow down time
-- Enter - manually progress by one day, you can also hold the button
+- Enter - manually progress one day
 - F - toggle fullscreen
 - V - toggle mouse cursor (will automatically hide when you enter fullscreen)
 - H - toggle UI
