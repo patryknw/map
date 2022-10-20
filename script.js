@@ -379,8 +379,8 @@ class House{
         this.type = "wooden";
     }
     assignColor(){
-        this.houseColor = `rgb(${offsetNumber(92, 4)}, ${offsetNumber(74, 4)}, ${offsetNumber(48, 4)})`;
-        this.roofColor = `rgb(${offsetNumber(77, 4)}, ${offsetNumber(61, 4)}, ${offsetNumber(39, 4)})`;
+        this.houseColor = `rgb(${offsetNumber(92, 4)}, ${offsetNumber(74, 4)}, ${offsetNumber(48, 6)})`;
+        this.roofColor = `rgb(${offsetNumber(77, 4)}, ${offsetNumber(61, 4)}, ${offsetNumber(39, 6)})`;
     }
     assignVariant(){
         switch(getRandomInt(0, 2)){
@@ -1108,8 +1108,10 @@ function displayDate(){
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
         ctx.strokeStyle = "#e1e1e1";
-        ctx.lineWidth = 1;
-        ctx.font = `bold ${Math.floor(WIDTH / 72)}px Pristina`;
+        ctx.lineWidth = 1.7;
+        //ctx.lineWidth = 1;
+        //ctx.font = `bold ${Math.floor(WIDTH / 72)}px Pristina`;
+        ctx.font = `${Math.floor(WIDTH / 54)}px Freestyle Script`;
         /*ctx.strokeText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
         ctx.fillText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
         ctx.strokeText(`${dayName}, ${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);
@@ -1206,7 +1208,7 @@ document.addEventListener("keydown", (event) => {
             break;
         case "Enter":
             event.preventDefault();
-            if(!event.repeat) update();
+            if(!event.repeat && isPaused) update();
             break;
         case "f":
             event.preventDefault();
