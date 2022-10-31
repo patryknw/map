@@ -43,17 +43,17 @@ let meteorologyData = {
     autumnStart: 23,
     winterStart: 21,
     
-    springTileShift: 14,
+    springTileShift: 12,
     springLeavesShift: 24,
-    summerTileShift: 21,
-    summerLeavesShift: 21,
-    autumnTileShift: 7,
-    autumnLeavesShift: 7,
+    summerTileShift: 18,
+    summerLeavesShift: 18,
+    autumnTileShift: 12,
+    autumnLeavesShift: 12,
     winterTileShift: 18,
-    winterLeavesShift: 21,
+    winterLeavesShift: 25,
 
-    waterFreeze: 3,
-    waterUnfreeze: 18
+    waterFreeze: 2,
+    waterUnfreeze: 14
 }
 
 document.title = seasonName;
@@ -454,7 +454,7 @@ class Tile{
         this.house = house;
     }
     setHeight(x, y){
-        this.height = Math.floor(Math.abs(noise.perlin2(x / 50, y / 50)) * 256)  // 50 being scale for perlin noise
+        this.height = Math.floor(Math.abs(noise.perlin2(x / 75, y / 75)) * 384)  // 50 being scale for perlin noise
     }
     setForestDensity(x, y){
         this.forestDensity = Math.floor(Math.abs(noise.perlin2(x / 50, y / 50)) * 256)  // 50 being scale for perlin noise
@@ -778,22 +778,22 @@ function setMeteorologyData(){
     let autumnOffset = offsetNumber(0, 6);
     let winterOffset = offsetNumber(0, 6);
 
-    meteorologyData.springTileShift = 14 + springOffset;
+    meteorologyData.springTileShift = 12 + springOffset;
     meteorologyData.springLeavesShift = 24 + springOffset;
-    meteorologyData.summerTileShift = 21 + summerOffset;
-    meteorologyData.summerLeavesShift = 21 + summerOffset;
-    meteorologyData.autumnTileShift = 7 + autumnOffset;
-    meteorologyData.autumnLeavesShift = 7 + autumnOffset;
+    meteorologyData.summerTileShift = 18 + summerOffset;
+    meteorologyData.summerLeavesShift = 18 + summerOffset;
+    meteorologyData.autumnTileShift = 12 + autumnOffset;
+    meteorologyData.autumnLeavesShift = 12 + autumnOffset;
     meteorologyData.winterTileShift = 18 + winterOffset;
-    meteorologyData.winterLeavesShift = 21 + winterOffset;
+    meteorologyData.winterLeavesShift = 25 + winterOffset;
 
-    meteorologyData.waterFreeze = offsetNumber(3, 2);
-    meteorologyData.waterUnfreeze = 18 + springOffset;
+    meteorologyData.waterFreeze = offsetNumber(2, 1);
+    meteorologyData.waterUnfreeze = 14 + springOffset;
 }
 
 function handleWinterColors(){
-    let snowfallAmount = Math.floor((WIDTH * HEIGHT) / 11520);
-    let leavesFallAmount = Math.floor((WIDTH * HEIGHT) / 10368);
+    let snowfallAmount = Math.floor((WIDTH * HEIGHT) / 6098);
+    let leavesFallAmount = Math.floor((WIDTH * HEIGHT) / 8640);
     switch(month){
         case 10:
             if(day == meteorologyData.winterLeavesShift) randomTilesLeavesData = {checkedTiles: [], index: 0};  // reseting random leaves data
@@ -812,7 +812,7 @@ function handleWinterColors(){
 }
 
 function handleSpringColors(){
-    let snowMeltAmount = Math.floor((WIDTH * HEIGHT) / 11520);
+    let snowMeltAmount = Math.floor((WIDTH * HEIGHT) / 7975);
     let leavesGrowthAmount = Math.floor((WIDTH * HEIGHT) / 10368);
     switch(month){
         case 3:
