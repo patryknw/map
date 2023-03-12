@@ -1,0 +1,31 @@
+{
+    "day": {
+        "monday": "Poniedziałek",
+        "tuesday": "Wtorek",
+        "wednesday": "Środa",
+        "thursday": "Czwartek",
+        "friday": "Piątek",
+        "saturday": "Sobota",
+        "sunday": "Niedziela"
+    },
+    "month": {
+        "january": "Stycznia",
+        "february": "Lutego",
+        "march": "Marca",
+        "april": "Kwietnia",
+        "may": "Maja",
+        "june": "Czerwca",
+        "july": "Lipca",
+        "august": "Sierpnia",
+        "september": "Września",
+        "october": "Października",
+        "november": "Listopada",
+        "december": "Grudnia"
+    },
+    "season": {
+        "spring": "Wiosna",
+        "summer": "Lato",
+        "autumn": "Jesień",
+        "winter": "Zima"
+    }
+}
