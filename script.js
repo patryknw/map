@@ -13,9 +13,11 @@ const TILE_SIZE = 20;
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
 
-const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const seasons = {spring: "Spring", summer: "Summer", autumn: "Autumn", winter: "Winter"};
+let days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+let months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+let seasons = {spring: "Spring", summer: "Summer", autumn: "Autumn", winter: "Winter"};
+
+let language = "pl-PL";
 
 const startDate = {
     day: 1,
@@ -57,6 +59,34 @@ let meteorologyData = {
 }
 
 document.title = seasonName;
+
+async function fetchLocalisation(localisation){
+    try{
+        let response = await fetch(`localization/${localisation}.json`);
+        let data = await response.json();
+        return data;
+    }
+    catch(error){
+        console.log(error);
+    }
+}
+
+async function localise(){
+    data = await fetchLocalisation(language);
+
+    for(let i = 0; i < 7; i++){
+        days[i] = data.day[days[i]];
+    }
+
+    for(let i = 0; i < 12; i++){
+        months[i] = data.month[months[i]];
+    }
+
+    seasons.spring = data.season.spring;
+    seasons.summer = data.season.summer;
+    seasons.autumn = data.season.autumn;
+    seasons.winter = data.season.winter;
+}
 
 function getRandomInt(min, max){
     min = Math.ceil(min);
@@ -1236,6 +1266,7 @@ function init(){
     drawHouses();
     drawForest();
     setMeteorologyData();
+    localise();
     displayDate();
 }
 init();
