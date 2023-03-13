@@ -86,6 +86,10 @@ async function localise(){
     seasons.summer = data.season.summer;
     seasons.autumn = data.season.autumn;
     seasons.winter = data.season.winter;
+    
+    dayName = days[weekdayNumber - 1];
+    monthName = months[month - 1];
+    seasonName = seasons[startDate.season];
 }
 
 function getRandomInt(min, max){
@@ -440,20 +444,7 @@ class Village{
         this.religion = religion;
     }
     setName(){
-        switch(getRandomInt(0, 3)){
-            case 0:
-                this.name = "Lindenvale";
-                break;
-            case 1:
-                this.name = "Upper Heather";
-                break;
-            case 2:
-                this.name = "Applebough";
-                break;
-            case 3:
-                this.name = "Claywich";
-                break;
-        }
+        this.name = data.villages.names[getRandomInt(0, 290)];
     }
     setProsperity(){
         this.prosperity = getRandomInt(1, 10);
@@ -1004,7 +995,7 @@ function generateVillage(){
     mapTiles[villageY][villageX].feature.setNumberOfHouses();
     mapTiles[villageY][villageX].feature.setReligion();
     mapTiles[villageY][villageX].feature.setChurch();
-    //mapTiles[villageY][villageX].drawDebug("#00ffff");
+    mapTiles[villageY][villageX].drawDebug("#00ffff");
 
     let houseCount = 0;
     let inhabitantsCount = 0;
@@ -1256,7 +1247,8 @@ document.addEventListener("keydown", (event) => {
 });
 
 // Initialisation
-function init(){
+async function init(){
+    await localise();
     createMapTemplate();
     createForestTemplate();
     drawFinalTile();
@@ -1266,7 +1258,6 @@ function init(){
     drawHouses();
     drawForest();
     setMeteorologyData();
-    localise();
     displayDate();
 }
 init();
