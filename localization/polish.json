@@ -9,18 +9,18 @@
         "sunday": "Niedziela"
     },
     "month": {
-        "january": "Stycznia",
-        "february": "Lutego",
-        "march": "Marca",
-        "april": "Kwietnia",
-        "may": "Maja",
-        "june": "Czerwca",
-        "july": "Lipca",
-        "august": "Sierpnia",
-        "september": "Września",
-        "october": "Października",
-        "november": "Listopada",
-        "december": "Grudnia"
+        "january": "stycznia",
+        "february": "lutego",
+        "march": "marca",
+        "april": "kwietnia",
+        "may": "maja",
+        "june": "czerwca",
+        "july": "lipca",
+        "august": "sierpnia",
+        "september": "września",
+        "october": "października",
+        "november": "listopada",
+        "december": "grudnia"
     },
     "season": {
         "spring": "Wiosna",

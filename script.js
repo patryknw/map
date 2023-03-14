@@ -17,7 +17,7 @@ let days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", 
 let months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 let seasons = {spring: "Spring", summer: "Summer", autumn: "Autumn", winter: "Winter"};
 
-let language = "pl-PL";
+let language = "polish";
 
 const startDate = {
     day: 1,
@@ -1132,7 +1132,8 @@ function displayDate(){
         ctx.lineWidth = 1.7;
         //ctx.lineWidth = 1;
         //ctx.font = `bold ${Math.floor(WIDTH / 72)}px Pristina`;
-        ctx.font = `${Math.floor(WIDTH / 54)}px Freestyle Script`;
+        //ctx.font = `${Math.floor(WIDTH / 54)}px Freestyle Script`;
+        ctx.font = `${Math.floor(WIDTH / 70)}px KobzarKS`;
         /*ctx.strokeText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
         ctx.fillText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
         ctx.strokeText(`${dayName}, ${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);
@@ -1144,8 +1145,12 @@ function displayDate(){
         ctx.strokeText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64), HEIGHT / 14);
         ctx.fillText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64), HEIGHT / 14);
         ctx.textAlign = "left";
-        ctx.strokeText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
-        ctx.fillText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
+        //ctx.strokeText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
+        //ctx.fillText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
+        ctx.strokeText(day, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
+        ctx.fillText(day, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
+        ctx.strokeText(`${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 66), HEIGHT / 14);
+        ctx.fillText(`${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 66), HEIGHT / 14);
     }
 }
 
