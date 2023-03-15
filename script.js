@@ -985,9 +985,12 @@ function generateStandaloneHouse(){
 
 function generateVillage(){
     const VILLAGE_RADIUS = getRandomInt(3, 5);
+    let villageX, villageY;
 
-    let villageX = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), WIDTH - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
-    let villageY = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), HEIGHT - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
+    do{
+        villageX = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), WIDTH - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
+        villageY = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), HEIGHT - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
+    } while(mapTiles[villageY][villageX].type == "water");
 
     mapTiles[villageY][villageX].feature = new Village(null, null, null, null, null, null);
     mapTiles[villageY][villageX].feature.setName();
@@ -1002,9 +1005,6 @@ function generateVillage(){
 
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
-            /*if(j == villageY && i == villageX){  // Center of village
-                mapTiles[j][i].drawDebug("#00ffff");
-            }*/
             if(j > villageY - VILLAGE_RADIUS && j < villageY + VILLAGE_RADIUS && i > villageX - VILLAGE_RADIUS && i < villageX + VILLAGE_RADIUS){
                 if(getRandomInt(0, 4) == 0 && houseCount < mapTiles[villageY][villageX].feature.numberOfHouses){
                     if(mapTiles[j][i].type != "water" && mapTiles[j][i].feature == null){
@@ -1124,33 +1124,36 @@ function nextDay(){
 }
 
 function displayDate(){
-    //if(inConsole) console.log(`${day}.${month}.${year}\n${seasonName}\n${dayName}, ${day} ${monthName} ${year}`);
+    //ctx.font = `bold ${Math.floor(WIDTH / 72)}px Pristina`;
+    //ctx.font = `${Math.floor(WIDTH / 54)}px Freestyle Script`;
     if(!isUIHidden){
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
         ctx.strokeStyle = "#e1e1e1";
         ctx.lineWidth = 1.7;
-        //ctx.lineWidth = 1;
-        //ctx.font = `bold ${Math.floor(WIDTH / 72)}px Pristina`;
-        //ctx.font = `${Math.floor(WIDTH / 54)}px Freestyle Script`;
         ctx.font = `${Math.floor(WIDTH / 70)}px KobzarKS`;
-        /*ctx.strokeText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
-        ctx.fillText(`${seasonName}`, WIDTH / 2, HEIGHT / 20);
-        ctx.strokeText(`${dayName}, ${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);
-        ctx.fillText(`${dayName}, ${day} ${monthName} ${year}`, WIDTH / 2, HEIGHT / 11);*/
+        
+        let monthOffset = monthName.length * -1.5;
+
         ctx.textAlign = "center";
-        ctx.strokeText(`${seasonName}`, WIDTH / 2, HEIGHT / 28);
-        ctx.fillText(`${seasonName}`, WIDTH / 2, HEIGHT / 28);
+        ctx.strokeText(`${seasonName}`, Math.floor(WIDTH / 2), Math.floor(HEIGHT / 28));
+        ctx.fillText(`${seasonName}`, Math.floor(WIDTH / 2), Math.floor(HEIGHT / 28));
+
         ctx.textAlign = "right";
-        ctx.strokeText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64), HEIGHT / 14);
-        ctx.fillText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64), HEIGHT / 14);
+        ctx.strokeText(`${dayName},`, Math.floor((WIDTH / 2) - (WIDTH / 64) + monthOffset), Math.floor(HEIGHT / 14));
+        ctx.fillText(`${dayName},`, Math.floor((WIDTH / 2) - (WIDTH / 64) + monthOffset), Math.floor(HEIGHT / 14));
+
         ctx.textAlign = "left";
-        //ctx.strokeText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
-        //ctx.fillText(`${day} ${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
-        ctx.strokeText(day, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
-        ctx.fillText(day, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256), HEIGHT / 14);
-        ctx.strokeText(`${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 66), HEIGHT / 14);
-        ctx.fillText(`${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 66), HEIGHT / 14);
+        ctx.strokeText(day, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + monthOffset), Math.floor(HEIGHT / 14));
+        ctx.fillText(day, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + monthOffset), Math.floor(HEIGHT / 14));
+
+        if(day < 10){
+            ctx.strokeText(`${monthName} ${year}`, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 100) + monthOffset), Math.floor(HEIGHT / 14));
+            ctx.fillText(`${monthName} ${year}`, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 100) + monthOffset), Math.floor(HEIGHT / 14));
+        } else if(day >= 10){
+            ctx.strokeText(`${monthName} ${year}`, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 66) + monthOffset), Math.floor(HEIGHT / 14));
+            ctx.fillText(`${monthName} ${year}`, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 66) + monthOffset), Math.floor(HEIGHT / 14));
+        }
     }
 }
 
