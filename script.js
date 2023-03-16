@@ -13,11 +13,11 @@ const TILE_SIZE = 20;
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
 
+const language = "polish";
+
 let days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 let months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 let seasons = {spring: "Spring", summer: "Summer", autumn: "Autumn", winter: "Winter"};
-
-let language = "polish";
 
 const startDate = {
     day: 1,
@@ -59,6 +59,12 @@ let meteorologyData = {
 }
 
 document.title = seasonName;
+/*
+document.title = "\uD83C\uDF37";
+document.title = "\u2600";
+document.title = "\u{1F342}";
+document.title = "\u2744";
+*/
 
 async function fetchLocalisation(localisation){
     try{
@@ -67,6 +73,19 @@ async function fetchLocalisation(localisation){
         return data;
     }
     catch(error){
+        console.log("Failed to fetch localization. Make sure you're running a local server.");
+        console.log(error);
+    }
+}
+
+async function fetchFont(){
+    const font = new FontFace("KobzarKS", "url(resources/KobzarKS.otf)");
+    try{
+        await font.load();
+        document.fonts.add(font);
+    }
+    catch(error){
+        console.log("Failed to fetch font. Make sure you're running a local server.");
         console.log(error);
     }
 }
@@ -1256,17 +1275,26 @@ document.addEventListener("keydown", (event) => {
 
 // Initialisation
 async function init(){
-    await localise();
-    createMapTemplate();
-    createForestTemplate();
-    drawFinalTile();
-    generateStandaloneHouse();
-    generateVillage();
-    generateForest();
-    drawHouses();
-    drawForest();
-    setMeteorologyData();
-    displayDate();
+    try{
+        await localise();
+        await fetchFont();
+    }
+    catch(error){
+        console.log("Failed to load resources. Make sure localization and font got successfully fetched.");
+        console.log(error);
+    }
+    finally{
+        createMapTemplate();
+        createForestTemplate();
+        drawFinalTile();
+        generateStandaloneHouse();
+        generateVillage();
+        generateForest();
+        drawHouses();
+        drawForest();
+        setMeteorologyData();
+        displayDate();
+    }
 }
 init();
 
