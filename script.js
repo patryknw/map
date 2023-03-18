@@ -17,7 +17,7 @@ const language = "polish";
 
 let days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 let months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
-let seasons = {spring: "Spring", summer: "Summer", autumn: "Autumn", winter: "Winter"};
+let seasons = {spring: "spring", summer: "summer", autumn: "autumn", winter: "winter"};
 
 const startDate = {
     day: 1,
@@ -58,13 +58,9 @@ let meteorologyData = {
     waterUnfreeze: 14
 }
 
-document.title = seasonName;
-/*
-document.title = "\uD83C\uDF37";
-document.title = "\u2600";
-document.title = "\u{1F342}";
-document.title = "\u2744";
-*/
+let gameData = {
+    village: null
+}
 
 async function fetchLocalisation(localisation){
     try{
@@ -161,7 +157,7 @@ function shiftChannel(tile, amount, channel, isTree){
             }
             break;
         default:
-            console.log("No channel given @ shiftChannel(tile, amount, channel)");
+            console.log("No channel given @ shiftChannel(tile, amount, channel, isTree)");
     }
     
     if(startingValue < targetValue){
@@ -201,7 +197,7 @@ function shiftChannel(tile, amount, channel, isTree){
             }
             break;
         default:
-            console.log("No channel given @ shiftChannel(tile, amount, channel)");
+            console.log("No channel given @ shiftChannel(tile, amount, channel, isTree)");
     }
 }
 
@@ -1011,13 +1007,12 @@ function generateVillage(){
         villageY = Math.floor(getRandomInt((TILE_SIZE * VILLAGE_RADIUS), HEIGHT - (TILE_SIZE * VILLAGE_RADIUS)) / TILE_SIZE);
     } while(mapTiles[villageY][villageX].type == "water");
 
-    mapTiles[villageY][villageX].feature = new Village(null, null, null, null, null, null);
-    mapTiles[villageY][villageX].feature.setName();
-    mapTiles[villageY][villageX].feature.setProsperity();
-    mapTiles[villageY][villageX].feature.setNumberOfHouses();
-    mapTiles[villageY][villageX].feature.setReligion();
-    mapTiles[villageY][villageX].feature.setChurch();
-    mapTiles[villageY][villageX].drawDebug("#00ffff");
+    gameData.village = new Village(null, null, null, null, null, null);
+    gameData.village.setName();
+    gameData.village.setProsperity();
+    gameData.village.setNumberOfHouses();
+    gameData.village.setReligion();
+    gameData.village.setChurch();
 
     let houseCount = 0;
     let inhabitantsCount = 0;
@@ -1025,7 +1020,7 @@ function generateVillage(){
     for(let j = 0; j < mapTiles.length; j++){
         for(let i = 0; i < mapTiles[j].length; i++){
             if(j > villageY - VILLAGE_RADIUS && j < villageY + VILLAGE_RADIUS && i > villageX - VILLAGE_RADIUS && i < villageX + VILLAGE_RADIUS){
-                if(getRandomInt(0, 4) == 0 && houseCount < mapTiles[villageY][villageX].feature.numberOfHouses){
+                if(getRandomInt(0, 4) == 0 && houseCount < gameData.village.numberOfHouses){
                     if(mapTiles[j][i].type != "water" && mapTiles[j][i].feature == null){
                         mapTiles[j][i].feature = "house";
                         mapTiles[j][i].house = new House(null, null, null, null, null);
@@ -1040,8 +1035,8 @@ function generateVillage(){
             }
         }
     }
-    mapTiles[villageY][villageX].feature.population = inhabitantsCount;
-    mapTiles[villageY][villageX].feature.numberOfHouses = houseCount;
+    gameData.village.population = inhabitantsCount;
+    gameData.village.numberOfHouses = houseCount;
 }
 
 function drawHouses(){
@@ -1109,28 +1104,28 @@ function nextDay(){
             if(day == meteorologyData.springStart){
                 season = "spring";
                 seasonName = seasons.spring;
-                document.title = seasonName;
+                document.title = `\uD83C\uDF37 ${gameData.village.name}`;
             }
             break;
         case 6:
             if(day == meteorologyData.summerStart){
                 season = "summer";
                 seasonName = seasons.summer;
-                document.title = seasonName;
+                document.title = `\u2600 ${gameData.village.name}`;
             }
             break;
         case 9:
             if(day == meteorologyData.autumnStart){
                 season = "autumn";
                 seasonName = seasons.autumn;
-                document.title = seasonName;
+                document.title = `\u{1F342} ${gameData.village.name}`;
             }
             break;
         case 12:
             if(day == meteorologyData.winterStart){
                 season = "winter";
                 seasonName = seasons.winter;
-                document.title = seasonName;
+                document.title = `\u2744 ${gameData.village.name}`;
             }
             break;
     }
@@ -1294,6 +1289,8 @@ async function init(){
         drawForest();
         setMeteorologyData();
         displayDate();
+        document.title = `\u2600 ${gameData.village.name}`;
+        console.log(gameData.village);
     }
 }
 init();
