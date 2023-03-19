@@ -28,6 +28,10 @@
         "autumn": "Autumn",
         "winter": "Winter"
     },
+    "religion": {
+        "catholicism": "Catholicism",
+        "orthodoxy": "Orthodoxy"
+    },
     "villages": {
         "names": [
             "Augustów",
