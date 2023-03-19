@@ -1150,7 +1150,6 @@ function displayDate(){
     // alt fonts: 26px bold Pristina; 35px Freestyle Script
     if(!isUIHidden){
         ctx.fillStyle = "#000000";
-        ctx.textAlign = "center";
         ctx.strokeStyle = "#e1e1e1";
         ctx.lineWidth = 1.7;
         ctx.font = `${Math.floor(WIDTH / 70)}px KobzarKS`;
@@ -1175,10 +1174,8 @@ let isFullscreen = false;
 function toggleFullscreen(){
     if(!isFullscreen){
         document.documentElement.requestFullscreen();
-        isFullscreen = true;
     } else{
         document.exitFullscreen();
-        isFullscreen = false;
     }
 }
 
@@ -1242,6 +1239,18 @@ let updateInterval = setInterval(update, updateTickSpeed);
 clearInterval(updateInterval);
 document.addEventListener("wheel", changeTimeSpeed, { passive: false });
 
+document.addEventListener("fullscreenchange", () => {
+    if(document.fullscreenElement){
+        isFullscreen = true;
+        isCursorHidden = true;
+        document.documentElement.style.cursor = "none";
+    } else{
+        isFullscreen = false;
+        isCursorHidden = false;
+        document.documentElement.style.cursor = "default";
+    }
+});
+
 document.addEventListener("keydown", (event) => {
     switch(event.key){
         case " ":
@@ -1254,7 +1263,7 @@ document.addEventListener("keydown", (event) => {
             break;
         case "f":
             event.preventDefault();
-            if(!event.repeat){ toggleFullscreen(); toggleCursor(); }
+            if(!event.repeat) toggleFullscreen();
             break;
         case "v":
             event.preventDefault();
