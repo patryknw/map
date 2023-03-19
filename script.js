@@ -18,6 +18,7 @@ const language = "polish";
 let days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 let months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 let seasons = {spring: "spring", summer: "summer", autumn: "autumn", winter: "winter"};
+let religions = {catholicism: "catholicism", orthodoxy: "orthodoxy"};
 
 const startDate = {
     day: 1,
@@ -102,6 +103,9 @@ async function localise(){
     seasons.autumn = data.season.autumn;
     seasons.winter = data.season.winter;
     
+    religions.catholicism = data.religion.catholicism;
+    religions.orthodoxy = data.religion.orthodoxy;
+
     dayName = days[weekdayNumber - 1];
     monthName = months[month - 1];
     seasonName = seasons[startDate.season];
@@ -119,6 +123,11 @@ function offsetNumber(number, offset){
 
 function getRGBArray(color){
     return color.substring(4, color.length - 1).replace(/ /g, "").split(",");
+}
+
+function writeText(text, x, y){
+    ctx.strokeText(text, Math.floor(x), Math.floor(y));
+    ctx.fillText(text, Math.floor(x), Math.floor(y));
 }
 
 function shiftChannel(tile, amount, channel, isTree){
@@ -1138,8 +1147,7 @@ function nextDay(){
 }
 
 function displayDate(){
-    //ctx.font = `bold ${Math.floor(WIDTH / 72)}px Pristina`;
-    //ctx.font = `${Math.floor(WIDTH / 54)}px Freestyle Script`;
+    // alt fonts: 26px bold Pristina; 35px Freestyle Script
     if(!isUIHidden){
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
@@ -1148,26 +1156,17 @@ function displayDate(){
         ctx.font = `${Math.floor(WIDTH / 70)}px KobzarKS`;
         
         let monthOffset = monthName.length * -1.5;
+        let digitGap;
 
         ctx.textAlign = "center";
-        ctx.strokeText(`${seasonName}`, Math.floor(WIDTH / 2), Math.floor(HEIGHT / 28));
-        ctx.fillText(`${seasonName}`, Math.floor(WIDTH / 2), Math.floor(HEIGHT / 28));
-
+        writeText(seasonName, WIDTH / 2, HEIGHT / 28);
         ctx.textAlign = "right";
-        ctx.strokeText(`${dayName},`, Math.floor((WIDTH / 2) - (WIDTH / 64) + monthOffset), Math.floor(HEIGHT / 14));
-        ctx.fillText(`${dayName},`, Math.floor((WIDTH / 2) - (WIDTH / 64) + monthOffset), Math.floor(HEIGHT / 14));
-
+        writeText(`${dayName},`, (WIDTH / 2) - (WIDTH / 64) + monthOffset, HEIGHT / 14);
         ctx.textAlign = "left";
-        ctx.strokeText(day, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + monthOffset), Math.floor(HEIGHT / 14));
-        ctx.fillText(day, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + monthOffset), Math.floor(HEIGHT / 14));
-
-        if(day < 10){
-            ctx.strokeText(`${monthName} ${year}`, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 100) + monthOffset), Math.floor(HEIGHT / 14));
-            ctx.fillText(`${monthName} ${year}`, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 100) + monthOffset), Math.floor(HEIGHT / 14));
-        } else if(day >= 10){
-            ctx.strokeText(`${monthName} ${year}`, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 66) + monthOffset), Math.floor(HEIGHT / 14));
-            ctx.fillText(`${monthName} ${year}`, Math.floor((WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + (WIDTH / 66) + monthOffset), Math.floor(HEIGHT / 14));
-        }
+        writeText(day, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + monthOffset, HEIGHT / 14);
+        
+        (day < 10) ? (digitGap = WIDTH / 100) : (digitGap = WIDTH / 66);
+        writeText(`${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + digitGap + monthOffset, HEIGHT / 14);
     }
 }
 
@@ -1291,6 +1290,7 @@ async function init(){
         displayDate();
         document.title = `\u2600 ${gameData.village.name}`;
         console.log(gameData.village);
+        console.log(religions[gameData.village.religion]);
     }
 }
 init();
