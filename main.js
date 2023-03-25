@@ -645,71 +645,10 @@ class Tile{
         this.feature = "tree";
         switch(treeType){
             case "deciduous":
-                // Trunk
-                ctx.fillStyle = trunkColor;
-                ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 8) + offsetY, TILE_SIZE / 4, (TILE_SIZE / 2) + (TILE_SIZE / 8));
-
-                // Leaves
-                if(hasLeaves){
-                    ctx.fillStyle = leavesColor;
-                    ctx.beginPath();
-                    ctx.arc(((this.x * TILE_SIZE) + (TILE_SIZE / 2)) + offsetX, (this.y * TILE_SIZE) + offsetY, TILE_SIZE / 2, 0, 2 * Math.PI);
-                    ctx.fill();
-                } else{
-                    ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4) + (TILE_SIZE / 16) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 2) + offsetY, (TILE_SIZE / 4) - (TILE_SIZE / 8), (TILE_SIZE / 2) + (TILE_SIZE / 2));
-                    ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 6) + offsetY, TILE_SIZE - (TILE_SIZE / 8) - (TILE_SIZE / 8), (TILE_SIZE / 8));
-                    ctx.strokeStyle = trunkColor;
-                    ctx.lineWidth = Math.floor(TILE_SIZE / 10);
-                    ctx.beginPath();
-                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY);
-                    ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 6) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 5) + offsetY);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY);
-                    ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE - (TILE_SIZE / 6) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 5) + offsetY);
-                    ctx.stroke();
-
-                    ctx.beginPath();
-                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY);
-                    ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 6) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 18) + offsetY);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY);
-                    ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE - (TILE_SIZE / 6) - (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 18) + offsetY);
-                    ctx.stroke();
-
-                    ctx.beginPath();
-                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 8) + offsetY);
-                    ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 5) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + (TILE_SIZE / 12) + offsetY);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) - (TILE_SIZE / 8) + offsetY);
-                    ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE - (TILE_SIZE / 5) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + (TILE_SIZE / 12) + offsetY);
-                    ctx.stroke();
-                }
+                gfxTreeDeciduous(ctx, this.x, this.y, TILE_SIZE, leavesColor, trunkColor, hasLeaves, offsetX, offsetY);
                 break;
             case "conifer":
-                // Trunk
-                ctx.fillStyle = trunkColor;
-                ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4) + (TILE_SIZE / 8) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2) + offsetY, TILE_SIZE / 4, TILE_SIZE / 2);
-
-                // Needles
-                ctx.fillStyle = leavesColor;
-                ctx.beginPath();
-                ctx.moveTo((this.x * TILE_SIZE) + offsetX, (this.y * TILE_SIZE) + TILE_SIZE - (TILE_SIZE / 4) + offsetY);
-                ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) + offsetY);
-                ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE + offsetX, (this.y * TILE_SIZE) + TILE_SIZE - (TILE_SIZE / 4) + offsetY);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.moveTo((this.x * TILE_SIZE) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2.25) + offsetY);
-                ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) - (TILE_SIZE / 4) + offsetY);
-                ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 2.25) + offsetY);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.moveTo((this.x * TILE_SIZE) + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 8) + offsetY);
-                ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 2) + offsetX, (this.y * TILE_SIZE) - (TILE_SIZE / 2) + offsetY);
-                ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE + offsetX, (this.y * TILE_SIZE) + (TILE_SIZE / 8) + offsetY);
-                ctx.fill();
+                gfxTreeConifer(ctx, this.x, this.y, TILE_SIZE, leavesColor, trunkColor, offsetX, offsetY);
                 break;
         }
     }
@@ -719,44 +658,7 @@ class Tile{
             case "thatch":
                 break;
             case "wooden":
-                // House Body
-                let mainColor = houseColor;
-                ctx.fillStyle = mainColor;
-                ctx.fillRect(this.x * TILE_SIZE, (this.y * TILE_SIZE) + (TILE_SIZE / 2), TILE_SIZE, TILE_SIZE / 2);
-
-                // House Roof
-                ctx.fillStyle = roofColor;
-                ctx.beginPath();
-                ctx.moveTo((this.x * TILE_SIZE) - (TILE_SIZE / 4), (this.y * TILE_SIZE) + (TILE_SIZE / 2));
-                ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 2), this.y * TILE_SIZE);
-                ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 4) + TILE_SIZE, (this.y * TILE_SIZE) + (TILE_SIZE / 2));
-                ctx.fill();
-
-                // House Gable
-                ctx.fillStyle = mainColor;
-                ctx.beginPath();
-                ctx.moveTo((this.x * TILE_SIZE), (this.y * TILE_SIZE) + (TILE_SIZE / 2));
-                ctx.lineTo((this.x * TILE_SIZE) + (TILE_SIZE / 2), (this.y * TILE_SIZE) + (TILE_SIZE / 6));
-                ctx.lineTo((this.x * TILE_SIZE) + TILE_SIZE, (this.y * TILE_SIZE) + (TILE_SIZE / 2));
-                ctx.fill();
-
-                // Doors and Windows
-                ctx.fillStyle = "#493a26";
-                switch(houseVariant){
-                    case 0:
-                        ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 2.75), (this.y * TILE_SIZE) + (TILE_SIZE / 1.5) - (TILE_SIZE / 8), TILE_SIZE / 4, (TILE_SIZE / 3) + (TILE_SIZE / 8));  // door in the middle
-                        break;
-                    case 1:
-                        ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 4), (this.y * TILE_SIZE) + (TILE_SIZE / 1.5) - (TILE_SIZE / 8), TILE_SIZE / 4, (TILE_SIZE / 3) + (TILE_SIZE / 8));  // door on the right
-                        ctx.fillStyle = "#443623";
-                        ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 1.55), (this.y * TILE_SIZE) + (TILE_SIZE / 1.66), TILE_SIZE / 5, TILE_SIZE / 5);
-                        break;
-                    case 2:
-                        ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 2), (this.y * TILE_SIZE) + (TILE_SIZE / 1.5) - (TILE_SIZE / 8), TILE_SIZE / 4, (TILE_SIZE / 3) + (TILE_SIZE / 8));  // door on the left
-                        ctx.fillStyle = "#443623";
-                        ctx.fillRect((this.x * TILE_SIZE) + (TILE_SIZE / 6.5), (this.y * TILE_SIZE) + (TILE_SIZE / 1.66), TILE_SIZE / 5, TILE_SIZE / 5);
-                        break;
-                }
+                gfxHouseWooden(ctx, this.x, this.y, TILE_SIZE, houseColor, roofColor, houseVariant);
                 break;
             case "painted":
                 break;
