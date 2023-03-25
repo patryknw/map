@@ -76,7 +76,7 @@ async function fetchLocalisation(localisation){
 }
 
 async function fetchFont(){
-    const font = new FontFace("KobzarKS", "url(resources/KobzarKS.otf)");
+    const font = new FontFace("KobzarKS", "url(fonts/KobzarKS.otf)");
     try{
         await font.load();
         document.fonts.add(font);
