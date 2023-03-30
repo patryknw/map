@@ -9,6 +9,9 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+const canvas2 = document.getElementById("canvas2");
+const ctx2 = canvas2.getContext("2d");
+
 const TILE_SIZE = 20;
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
@@ -1070,6 +1073,80 @@ function displayDate(){
         writeText(`${monthName} ${year}`, (WIDTH / 2) - (WIDTH / 64) + (WIDTH / 256) + digitGap + monthOffset, HEIGHT / 14);
     }
 }
+
+// Intro
+function fadeBackground(){
+    let alpha = 1;
+    interval = setInterval(() => {
+        ctx2.clearRect(0, 0, WIDTH, HEIGHT);
+        ctx2.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+        ctx2.fillRect(0, 0, WIDTH, HEIGHT);
+        alpha -= 0.025;
+        console.log(alpha);
+        if(alpha <= 0.025){
+            clearInterval(interval);
+            ctx2.clearRect(0, 0, WIDTH, HEIGHT);
+        }
+    }, 50);
+}
+
+function fadeInText(text, x, y){
+    let alpha = 0;
+    interval = setInterval(() => {
+        ctx2.fillStyle = "#000000";
+        ctx2.fillRect(0, 0, WIDTH, HEIGHT);
+
+        ctx2.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+
+        for(let i = 0; i < text.length; i++){
+            ctx2.fillText(text[i], x, (y / text.length * 2.5) + (i * 100));
+        }
+
+        alpha += 0.05;
+
+        if(alpha >= 0.95){
+            clearInterval(interval);
+        }
+    }, 50);
+}
+
+function fadeOutText(text, x, y){
+    let alpha = 1;
+    interval = setInterval(() => {
+        ctx2.fillStyle = "#000000";
+        ctx2.fillRect(0, 0, WIDTH, HEIGHT);
+
+        ctx2.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+
+        for(let i = 0; i < text.length; i++){
+            ctx2.fillText(text[i], x, (y / text.length * 2.5) + (i * 100));
+        }
+
+        alpha -= 0.05;
+        
+        if(alpha <= 0.05){
+            clearInterval(interval);
+            ctx2.fillStyle = "#000000";
+            ctx2.fillRect(0, 0, WIDTH, HEIGHT);
+        }
+    }, 50);
+}
+
+function fadeText(text, x, y){
+    ctx2.textAlign = "center";
+    ctx2.font = "44px KobzarKS";
+    fadeInText(text, x, y);
+    setTimeout(fadeOutText, 2000, text, x, y);
+}
+
+function playIntro(){
+    ctx2.fillStyle = "#000000";
+    ctx2.fillRect(0, 0, WIDTH, HEIGHT);
+    setTimeout(fadeBackground, 3500);
+    fadeText(["Rzeczpospolita Obojga Narodów", "Korona Królestwa Polskiego", "Województwo Kijowskie", "Okolice wsi Jawornik", "", "Piątek, 1 lipca 1569 r."], WIDTH / 2, HEIGHT / 2);
+}
+
+playIntro();
 
 // User input
 let isFullscreen = false;
