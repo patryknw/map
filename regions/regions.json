@@ -1,0 +1,170 @@
+{
+    "poznanskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "kaliskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "inowroclawskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "brzesko_kujawskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "leczyckie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "sieradzkie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "rawskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "plockie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "pomorskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "chelminskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "malborskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "mazowieckie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "warminskie": {
+        "type": "duchy",
+        "province": "poland"
+    },
+    "krakowskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "sandomierskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "lubelskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "podlaskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "ruskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "belskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "wolynskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "podolskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "braclawskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "kijowskie": {
+        "type": "voivodeship",
+        "province": "poland"
+    },
+    "czernihowskie": {
+        "type": "duchy",
+        "province": "poland"
+    },
+    "trockie": {
+        "type": "voivodeship",
+        "province": "lithuania"
+    },
+    "wilenskie": {
+        "type": "voivodeship",
+        "province": "lithuania"
+    },
+    "nowogrodzkie": {
+        "type": "voivodeship",
+        "province": "lithuania"
+    },
+    "brzesko_litewskie": {
+        "type": "voivodeship",
+        "province": "lithuania"
+    },
+    "minskie": {
+        "type": "voivodeship",
+        "province": "lithuania"
+    },
+    "mscislawskie": {
+        "type": "voivodeship",
+        "province": "lithuania"
+    },
+    "smolenskie": {
+        "type": "voivodeship",
+        "province": "lithuania"
+    },
+    "witebskie": {
+        "type": "voivodeship",
+        "province": "lithuania"
+    },
+    "polockie": {
+        "type": "voivodeship",
+        "province": "lithuania"
+    },
+    "zmudzkie": {
+        "type": "duchy",
+        "province": "lithuania"
+    },
+    "wendenskie": {
+        "type": "voivodeship",
+        "province": "inflanty"
+    },
+    "parnawskie": {
+        "type": "voivodeship",
+        "province": "inflanty"
+    },
+    "dorpackie": {
+        "type": "voivodeship",
+        "province": "inflanty"
+    },
+    "prusy": {
+        "type": "fief",
+        "province": "fief"
+    },
+    "kurlandzkie": {
+        "type": "fief",
+        "province": "fief"
+    },
+    "leborsko_bytowska": {
+        "type": "fief",
+        "province": "fief"
+    },
+    "siewierskie": {
+        "type": "unincorporated",
+        "province": "unincorporated"
+    },
+    "spiskie": {
+        "type": "unincorporated",
+        "province": "unincorporated"
+    }
+}

@@ -66,6 +66,12 @@ let gameData = {
     village: null
 }
 
+let regionData = {
+    "name": null,
+    "type": null,
+    "province": null
+}
+
 async function fetchLocalisation(localisation){
     try{
         let response = await fetch(`localization/${localisation}.json`);
@@ -90,8 +96,50 @@ async function fetchFont(){
     }
 }
 
+async function fetchRegionData(){
+    try{
+        let response = await fetch(`regions/regions.json`);
+        let data = await response.json();
+        return data;
+    }
+    catch(error){
+        console.log("Failed to fetch region data. Make sure you're running a local server.");
+        console.log(error);
+    }
+}
+
+async function fetchVillageNames(){
+    try{
+        let response = await fetch(`regions/villages.json`);
+        let data = await response.json();
+        return data;
+    }
+    catch(error){
+        console.log("Failed to fetch village names. Make sure you're running a local server.");
+        console.log(error);
+    }
+}
+
+async function getRandomRegion(){
+    let data = await fetchRegionData();
+
+    let regionNumber = getRandomInt(0, 41);
+    let regionName = Object.keys(data)[regionNumber];
+    let regionValues = Object.values(data)[regionNumber];
+
+    regionData.name = regionName;
+    regionData.type = regionValues.type;
+    regionData.province = regionValues.province;
+}
+
+async function getRandomVillageName(){
+    let data = await fetchVillageNames();
+    return data.villages[getRandomInt(0, 289)];
+}
+
+let strings;
 async function localise(){
-    data = await fetchLocalisation(language);
+    let data = await fetchLocalisation(language);
 
     for(let i = 0; i < 7; i++){
         days[i] = data.day[days[i]];
@@ -112,6 +160,34 @@ async function localise(){
     dayName = days[weekdayNumber - 1];
     monthName = months[month - 1];
     seasonName = seasons[startDate.season];
+
+    regionData.name = data.region[regionData.name];
+
+    if(regionData.type == "fief" || regionData.type == "unincorporated"){
+        regionData.type = "";
+    } else{
+        regionData.type = data.region[regionData.type];
+    }
+
+    switch(regionData.province){
+        case "poland":
+            regionData.province = data.region.poland;
+            break;
+        case "lithuania":
+            regionData.province = data.region.lithuania;
+            break;
+        case "inflanty":
+            regionData.province = data.region.inflanty;
+            break;
+        case "fief":
+            regionData.province = data.region[regionData.province];
+            break;
+        case "unincorporated":
+            regionData.province = data.region[regionData.province];
+            break;
+    }
+
+    strings = data;
 }
 
 function getRandomInt(min, max){
@@ -471,7 +547,7 @@ class Village{
         this.religion = religion;
     }
     setName(){
-        this.name = data.villages.names[getRandomInt(0, 290)];
+        //this.name = strings.villages.names[getRandomInt(0, 289)];
     }
     setProsperity(){
         this.prosperity = getRandomInt(1, 10);
@@ -1082,7 +1158,6 @@ function fadeBackground(){
         ctx2.fillStyle = `rgba(0, 0, 0, ${alpha})`;
         ctx2.fillRect(0, 0, WIDTH, HEIGHT);
         alpha -= 0.025;
-        console.log(alpha);
         if(alpha <= 0.025){
             clearInterval(interval);
             ctx2.clearRect(0, 0, WIDTH, HEIGHT);
@@ -1099,7 +1174,7 @@ function fadeInText(text, x, y){
         ctx2.fillStyle = `rgba(255, 255, 255, ${alpha})`;
 
         for(let i = 0; i < text.length; i++){
-            ctx2.fillText(text[i], x, (y / text.length * 2.5) + (i * 100));
+            ctx2.fillText(text[i], x, (y / text.length + (HEIGHT / 6)) + (i * (HEIGHT / 8)));
         }
 
         alpha += 0.05;
@@ -1119,7 +1194,7 @@ function fadeOutText(text, x, y){
         ctx2.fillStyle = `rgba(255, 255, 255, ${alpha})`;
 
         for(let i = 0; i < text.length; i++){
-            ctx2.fillText(text[i], x, (y / text.length * 2.5) + (i * 100));
+            ctx2.fillText(text[i], x, (y / text.length + (HEIGHT / 6)) + (i * (HEIGHT / 8)));
         }
 
         alpha -= 0.05;
@@ -1143,10 +1218,8 @@ function playIntro(){
     ctx2.fillStyle = "#000000";
     ctx2.fillRect(0, 0, WIDTH, HEIGHT);
     setTimeout(fadeBackground, 3500);
-    fadeText(["Rzeczpospolita Obojga Narodów", "Korona Królestwa Polskiego", "Województwo Kijowskie", "Okolice wsi Jawornik", "", "Piątek, 1 lipca 1569 r."], WIDTH / 2, HEIGHT / 2);
+    fadeText([strings.region.rzeczpospolita, regionData.province, `${regionData.type} ${regionData.name}`, `${strings.intro.surroundings_of} ${gameData.village.name}`], WIDTH / 2, HEIGHT / 2);
 }
-
-playIntro();
 
 // User input
 let isFullscreen = false;
@@ -1257,12 +1330,14 @@ document.addEventListener("keydown", (event) => {
 
 // Initialisation
 async function init(){
+    ctx2.fillStyle = "#000000";
+    ctx2.fillRect(0, 0, WIDTH, HEIGHT);
     try{
-        await localise();
         await fetchFont();
+        await getRandomRegion();
+        await localise();
     }
     catch(error){
-        console.log("Failed to load resources. Make sure localization and font got successfully fetched.");
         console.log(error);
     }
     finally{
@@ -1276,9 +1351,11 @@ async function init(){
         drawForest();
         setMeteorologyData();
         displayDate();
+        gameData.village.name = strings.villages[await getRandomVillageName()];
         document.title = `\u2600 ${gameData.village.name}`;
         console.log(gameData.village);
         console.log(religions[gameData.village.religion]);
+        playIntro();
     }
 }
 init();
